@@ -1,12 +1,51 @@
 package ru.practicum.shareit.user;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.List;
 
 /**
  * TODO Sprint add-controllers.
  */
 @RestController
-@RequestMapping(path = "/users")
+@Slf4j
+@Component
+@RequiredArgsConstructor
 public class UserController {
+    private final UserService userService;
+
+    @GetMapping("/users")
+    public List<User> getUsers(){
+        return userService.getUsers();
+    }
+
+    @GetMapping("/users/{id}")
+    public User getUserById(@PathVariable int id){
+        return userService.getUserById(id);
+    }
+
+    @PostMapping("/users")
+    public User createUser(@Valid @RequestBody UserDto user) throws CloneNotSupportedException {
+        log.info("User добавлен(UserController)");
+        return userService.createUser(user);
+    }
+
+//    @PutMapping("/users/{id}")
+//    public User updateUserById(@PathVariable int id, @RequestBody User user){
+//        return userService.updateUserById(id, user);
+//    }
+
+    @PatchMapping("/users/{userId}")
+    public User updateUserByIdPatch(@PathVariable int userId, @RequestBody User user){
+        return userService.updateUserById(userId, user);
+    }
+
+    @DeleteMapping("/users/{id}")
+    public void deleteUserById(@PathVariable int id){
+        userService.deleteUserById(id);
+    }
 }
