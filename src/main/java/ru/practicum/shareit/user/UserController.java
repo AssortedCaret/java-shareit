@@ -40,7 +40,7 @@ public class UserController {
 //    }
 
     @PatchMapping("/users/{userId}")
-    public User updateUserByIdPatch(@PathVariable int userId, @RequestBody User user){
+    public User updateUserByIdPatch(@PathVariable int userId, @RequestBody User user) throws CloneNotSupportedException {
         return userService.updateUserById(userId, user);
     }
 
