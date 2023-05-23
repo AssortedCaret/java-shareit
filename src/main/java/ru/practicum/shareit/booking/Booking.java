@@ -2,12 +2,10 @@ package ru.practicum.shareit.booking;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NonNull;
-import org.springframework.format.annotation.DateTimeFormat;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.model.User;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * TODO Sprint add-bookings.
@@ -15,11 +13,10 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 public class Booking {
-    @NonNull
-    @DateTimeFormat
-    private Date bookingDate;
-    @NotBlank
-    private Boolean bookingStatus;
-    @Size(max = 200)
-    private String bookingFeedback;
+    private int id;
+    private LocalDate start;
+    private LocalDate end;
+    private Item item;
+    private User booker;
+    private BookingStatus status;
 }
