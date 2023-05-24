@@ -42,6 +42,35 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    public List<Item> getItemsText(String text) {
+        List<Item> itemList = new ArrayList<>();
+        String checkingTheComparisonName;
+        String checkingTheComparisonDescription;
+        if (text == "" || text == null)
+            return new ArrayList<>();
+        else {
+            for (Map.Entry<Integer, Item> it : itemMap.entrySet()) {
+                Item itemM = it.getValue();
+                if (itemM.getAvailable() == true) {
+//                    checkingTheComparisonName = itemM.getName().compareToIgnoreCase(text);
+//                    checkingTheComparisonDescription = itemM.getDescription().compareToIgnoreCase(text);
+//                    if (checkingTheComparisonName >= 0)
+//                        itemList.add(itemM);
+//                    else if (checkingTheComparisonDescription >= 0)
+//                        itemList.add(itemM);
+                    checkingTheComparisonName = itemM.getName().toLowerCase();
+                    checkingTheComparisonDescription = itemM.getDescription().toLowerCase();
+                    if (checkingTheComparisonName.contains(text.toLowerCase()))
+                        itemList.add(itemM);
+                    else if (checkingTheComparisonDescription.contains(text.toLowerCase()))
+                        itemList.add(itemM);
+                }
+            }
+            return itemList;
+        }
+    }
+
+    @Override
     public ItemDto createItem(int userId, ItemDto itemDto) throws BadRequestException {
         if (userService.getUserById(userId) == null)
             throw new NotFoundException("Поле User отсутствует");

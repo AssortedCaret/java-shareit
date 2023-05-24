@@ -28,6 +28,11 @@ public class ItemController {
         return itemService.getItems(userId);
     }
 
+    @GetMapping("/items/search")
+    public List<Item> getItemsText(@RequestParam String text) {
+        return itemService.getItemsText(text);
+    }
+
     @GetMapping("/items/{id}")
     public ItemDto getUserById(@PathVariable int id){
         return itemService.getItemById(id);

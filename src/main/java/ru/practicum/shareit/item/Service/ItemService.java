@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.Service;
 
+import org.springframework.web.bind.annotation.RequestParam;
 import ru.practicum.shareit.item.BadRequestException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
@@ -11,7 +12,9 @@ public interface ItemService {
 
     public ItemDto getItemById(int id);
 
-    ItemDto createItem(int userId, ItemDto itemDto) throws BadRequestException;
+    public List<Item> getItemsText(String text);
+
+    public ItemDto createItem(int userId, ItemDto itemDto) throws BadRequestException;
 
     public ItemDto updateItemById(int userId, int id, ItemDto item) throws CloneNotSupportedException, BadRequestException;
 
