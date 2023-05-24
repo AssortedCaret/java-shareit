@@ -6,15 +6,19 @@ import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
     private Integer id = 0;
 
     private Map<Integer, User> userMap = new HashMap<>();
     private List<User> userList = new ArrayList<>();
+
     @Override
     public List<User> getUsers() {
         return new ArrayList(userMap.values());
@@ -29,7 +33,7 @@ public class UserServiceImpl implements UserService{
     @Override
     public User createUser(UserDto user) throws CloneNotSupportedException {
         User newUser = UserMapper.makeUser(user);
-        for (Map.Entry<Integer, User> us: userMap.entrySet()){
+        for (Map.Entry<Integer, User> us : userMap.entrySet()) {
             User userM = us.getValue();
             if (userM.getEmail().equals(newUser.getEmail())) {
                 throw new CloneNotSupportedException("Данный email уже зарегистрирован");
@@ -49,9 +53,9 @@ public class UserServiceImpl implements UserService{
         if (user.getEmail() == null)
             user.setEmail(adUser.getEmail());
         else {
-            for (Map.Entry<Integer, User> us: userMap.entrySet()){
+            for (Map.Entry<Integer, User> us : userMap.entrySet()) {
                 User userM = us.getValue();
-                if(adUser.getId() != userM.getId()) {
+                if (adUser.getId() != userM.getId()) {
                     if (userM.getEmail().equals(user.getEmail())) {
                         throw new CloneNotSupportedException("Данный email уже зарегистрирован");
                     }
@@ -69,7 +73,7 @@ public class UserServiceImpl implements UserService{
         userMap.remove(id);
     }
 
-    private Integer makeId(){
+    private Integer makeId() {
         id += 1;
         return id;
     }

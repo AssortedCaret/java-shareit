@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item.Service;
 
-import org.springframework.web.bind.annotation.RequestParam;
 import ru.practicum.shareit.item.BadRequestException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
@@ -8,7 +7,7 @@ import ru.practicum.shareit.item.model.Item;
 import java.util.List;
 
 public interface ItemService {
-    public List<Item> getItems( int userId);
+    public List<Item> getItems(int userId);
 
     public ItemDto getItemById(int id);
 

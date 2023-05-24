@@ -7,7 +7,6 @@ import ru.practicum.shareit.item.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.Service.UserService;
-import ru.practicum.shareit.user.model.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,9 +26,9 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<Item> getItems(int userId) {
         List<Item> itemList = new ArrayList<>();
-        for (Map.Entry<Integer, Item> it: itemMap.entrySet()) {
+        for (Map.Entry<Integer, Item> it : itemMap.entrySet()) {
             Item itemM = it.getValue();
-            if (itemM.getOwner().getId()== userId)
+            if (itemM.getOwner().getId() == userId)
                 itemList.add(itemM);
         }
         return itemList;
@@ -52,12 +51,6 @@ public class ItemServiceImpl implements ItemService {
             for (Map.Entry<Integer, Item> it : itemMap.entrySet()) {
                 Item itemM = it.getValue();
                 if (itemM.getAvailable() == true) {
-//                    checkingTheComparisonName = itemM.getName().compareToIgnoreCase(text);
-//                    checkingTheComparisonDescription = itemM.getDescription().compareToIgnoreCase(text);
-//                    if (checkingTheComparisonName >= 0)
-//                        itemList.add(itemM);
-//                    else if (checkingTheComparisonDescription >= 0)
-//                        itemList.add(itemM);
                     checkingTheComparisonName = itemM.getName().toLowerCase();
                     checkingTheComparisonDescription = itemM.getDescription().toLowerCase();
                     if (checkingTheComparisonName.contains(text.toLowerCase()))
@@ -110,7 +103,7 @@ public class ItemServiceImpl implements ItemService {
         itemMap.remove(id);
     }
 
-    private Integer makeId(){
+    private Integer makeId() {
         id += 1;
         return id;
     }

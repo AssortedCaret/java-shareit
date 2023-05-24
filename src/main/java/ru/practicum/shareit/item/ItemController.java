@@ -9,7 +9,6 @@ import ru.practicum.shareit.item.Service.ItemService;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 
-import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -34,7 +33,7 @@ public class ItemController {
     }
 
     @GetMapping("/items/{id}")
-    public ItemDto getUserById(@PathVariable int id){
+    public ItemDto getUserById(@PathVariable int id) {
         return itemService.getItemById(id);
     }
 
@@ -52,7 +51,7 @@ public class ItemController {
     }
 
     @DeleteMapping("/items/{id}")
-    public void deleteUserById(@PathVariable int id){
+    public void deleteUserById(@PathVariable int id) {
         itemService.deleteItemById(id);
     }
 }
