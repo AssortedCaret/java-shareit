@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
         else {
             for (Map.Entry<Integer, User> us : userMap.entrySet()) {
                 User userM = us.getValue();
-                if (adUser.getId() != userM.getId()) {
+                if (adUser.getId().compareTo(userM.getId()) != 0) {
                     if (userM.getEmail().equals(user.getEmail())) {
                         throw new CloneNotSupportedException("Данный email уже зарегистрирован");
                     }

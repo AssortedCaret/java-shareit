@@ -45,7 +45,7 @@ public class ItemServiceImpl implements ItemService {
         List<Item> itemList = new ArrayList<>();
         String checkingTheComparisonName;
         String checkingTheComparisonDescription;
-        if (text == "")
+        if (text.equals("") || text.equals(null))
             return new ArrayList<>();
         else {
             for (Map.Entry<Integer, Item> it : itemMap.entrySet()) {
