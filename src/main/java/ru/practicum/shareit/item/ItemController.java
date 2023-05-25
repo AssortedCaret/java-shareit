@@ -16,41 +16,42 @@ import java.util.List;
  */
 @RestController
 @Slf4j
+@RequestMapping("/items")
 @Component
 @RequiredArgsConstructor
 public class ItemController {
     @Autowired
     private final ItemService itemService;
 
-    @GetMapping("/items")
+    @GetMapping
     public List<Item> getItems(@RequestHeader("X-Sharer-User-Id") int userId) {
         return itemService.getItems(userId);
     }
 
-    @GetMapping("/items/search")
+    @GetMapping("/search")
     public List<Item> getItemsText(@RequestParam String text) {
         return itemService.getItemsText(text);
     }
 
-    @GetMapping("/items/{id}")
+    @GetMapping("/{id}")
     public ItemDto getUserById(@PathVariable int id) {
         return itemService.getItemById(id);
     }
 
-    @PostMapping("/items")
+    @PostMapping
     public ItemDto createUser(@RequestHeader("X-Sharer-User-Id") int userId, @RequestBody ItemDto itemDto)
             throws BadRequestException {
         log.info("User добавлен(UserController)");
         return itemService.createItem(userId, itemDto);
     }
 
-    @PatchMapping("/items/{itemId}")
+    @PatchMapping("/{itemId}")
     public ItemDto updateUserByIdPatch(@RequestHeader("X-Sharer-User-Id") int userId, @PathVariable int itemId,
                                        @RequestBody ItemDto item) throws BadRequestException, CloneNotSupportedException {
         return itemService.updateItemById(userId, itemId, item);
     }
 
-    @DeleteMapping("/items/{id}")
+    @DeleteMapping("/{id}")
     public void deleteUserById(@PathVariable int id) {
         itemService.deleteItemById(id);
     }

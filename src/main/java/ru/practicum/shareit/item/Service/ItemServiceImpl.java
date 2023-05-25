@@ -21,7 +21,7 @@ import static ru.practicum.shareit.item.ItemMapper.makeItemDto;
 public class ItemServiceImpl implements ItemService {
     private final UserService userService;
     private Integer id = 0;
-    private Map<Integer, Item> itemMap = new HashMap<>();
+    private final Map<Integer, Item> itemMap = new HashMap<>();
 
     @Override
     public List<Item> getItems(int userId) {
@@ -45,12 +45,12 @@ public class ItemServiceImpl implements ItemService {
         List<Item> itemList = new ArrayList<>();
         String checkingTheComparisonName;
         String checkingTheComparisonDescription;
-        if (text.equals("") || text.equals(null))
+        if (text == null || text.equals(""))
             return new ArrayList<>();
         else {
             for (Map.Entry<Integer, Item> it : itemMap.entrySet()) {
                 Item itemM = it.getValue();
-                if (itemM.getAvailable() == true) {
+                if (itemM.getAvailable()) {
                     checkingTheComparisonName = itemM.getName().toLowerCase();
                     checkingTheComparisonDescription = itemM.getDescription().toLowerCase();
                     if (checkingTheComparisonName.contains(text.toLowerCase()))

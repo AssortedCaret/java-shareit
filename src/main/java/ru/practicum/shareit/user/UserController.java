@@ -16,33 +16,34 @@ import java.util.List;
  */
 @RestController
 @Slf4j
+@RequestMapping("/users")
 @Component
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
 
-    @GetMapping("/users")
+    @GetMapping
     public List<User> getUsers() {
         return userService.getUsers();
     }
 
-    @GetMapping("/users/{id}")
+    @GetMapping("/{id}")
     public User getUserById(@PathVariable int id) {
         return userService.getUserById(id);
     }
 
-    @PostMapping("/users")
+    @PostMapping
     public User createUser(@Valid @RequestBody UserDto user) throws CloneNotSupportedException {
         log.info("User добавлен(UserController)");
         return userService.createUser(user);
     }
 
-    @PatchMapping("/users/{userId}")
+    @PatchMapping("/{userId}")
     public User updateUserByIdPatch(@PathVariable int userId, @RequestBody User user) throws CloneNotSupportedException {
         return userService.updateUserById(userId, user);
     }
 
-    @DeleteMapping("/users/{id}")
+    @DeleteMapping("/{id}")
     public void deleteUserById(@PathVariable int id) {
         userService.deleteUserById(id);
     }

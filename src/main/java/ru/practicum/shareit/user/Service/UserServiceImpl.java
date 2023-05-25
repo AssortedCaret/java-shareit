@@ -16,12 +16,12 @@ import java.util.Map;
 public class UserServiceImpl implements UserService {
     private Integer id = 0;
 
-    private Map<Integer, User> userMap = new HashMap<>();
+    private final Map<Integer, User> userMap = new HashMap<>();
     private List<User> userList = new ArrayList<>();
 
     @Override
     public List<User> getUsers() {
-        return new ArrayList(userMap.values());
+        return new ArrayList<User>(userMap.values());
     }
 
     @Override
