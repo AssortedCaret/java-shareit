@@ -1,2 +1,5 @@
 # java-shareit
-Template repository for Shareit project.
+---
+В приложении пользователи могут рассказывать, какими вещами они готовы поделиться, а так же, находить нужную вещь и брать её в аренду на какое-то время.
+# Стек технологий
+Java, Maven, SpringBoot, PostgreSQL, ORM Hibernate
