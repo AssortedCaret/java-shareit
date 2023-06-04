@@ -2,8 +2,8 @@ package ru.practicum.shareit.item.Service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.item.BadRequestException;
-import ru.practicum.shareit.item.NotFoundException;
+import ru.practicum.shareit.exceptions.BadRequestException;
+import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.Service.UserService;
@@ -13,20 +13,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static ru.practicum.shareit.item.ItemMapper.makeItem;
-import static ru.practicum.shareit.item.ItemMapper.makeItemDto;
+import static ru.practicum.shareit.item.mapper.ItemMapper.makeItem;
+import static ru.practicum.shareit.item.mapper.ItemMapper.makeItemDto;
 
 @Service
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
     private final UserService userService;
-    private Integer id = 0;
-    private final Map<Integer, Item> itemMap = new HashMap<>();
+    private Long id = 0L;
+    private final Map<Long, Item> itemMap = new HashMap<>();
 
     @Override
-    public List<Item> getItems(int userId) {
+    public List<Item> getItems(Long userId) {
         List<Item> itemList = new ArrayList<>();
-        for (Map.Entry<Integer, Item> it : itemMap.entrySet()) {
+        for (Map.Entry<Long, Item> it : itemMap.entrySet()) {
             Item itemM = it.getValue();
             if (itemM.getOwner().getId() == userId)
                 itemList.add(itemM);
@@ -35,7 +35,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto getItemById(int id) {
+    public ItemDto getItemById(Long id) {
         Item item = itemMap.get(id);
         return makeItemDto(item);
     }
@@ -48,7 +48,7 @@ public class ItemServiceImpl implements ItemService {
         if (text == null || text.equals(""))
             return new ArrayList<>();
         else {
-            for (Map.Entry<Integer, Item> it : itemMap.entrySet()) {
+            for (Map.Entry<Long, Item> it : itemMap.entrySet()) {
                 Item itemM = it.getValue();
                 if (itemM.getAvailable()) {
                     checkingTheComparisonName = itemM.getName().toLowerCase();
@@ -64,10 +64,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto createItem(int userId, ItemDto itemDto) throws BadRequestException {
+    public ItemDto createItem(Long userId, ItemDto itemDto) throws BadRequestException {
         if (userService.getUserById(userId) == null)
             throw new NotFoundException("Поле User отсутствует");
-        itemDto.setOwner(userService.getUserById(userId));
+        itemDto.setOwner((long) userId);
         if (itemDto.getAvailable() == null)
             throw new BadRequestException("Поле Available отсутствует");
         if (itemDto.getName() == null || itemDto.getName() == "")
@@ -81,7 +81,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto updateItemById(int userId, int id, ItemDto itemDto) {
+    public ItemDto updateItemById(Long userId, Long id, ItemDto itemDto) {
         Item adItem = itemMap.get(id);
         if (adItem.getOwner().getId() != userId) {
             throw new NotFoundException("Поле Owner не совпадает");
@@ -103,7 +103,7 @@ public class ItemServiceImpl implements ItemService {
         itemMap.remove(id);
     }
 
-    private Integer makeId() {
+    private Long makeId() {
         id += 1;
         return id;
     }

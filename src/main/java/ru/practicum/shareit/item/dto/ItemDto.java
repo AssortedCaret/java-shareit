@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
@@ -14,18 +15,13 @@ import javax.validation.constraints.Size;
  */
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class ItemDto {
-    @NotBlank
-    private Integer id;
-    @NotBlank
-    private User owner;
-    @NotBlank
+    private Long id;
+    private Long owner;
     private String name;
-    @NotBlank
-    @Size(max = 200)
     private String description;
-    @NotBlank
     private Boolean available;
     private ItemRequest request;
 }

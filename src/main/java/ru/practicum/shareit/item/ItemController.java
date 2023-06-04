@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.exceptions.BadRequestException;
 import ru.practicum.shareit.item.Service.ItemService;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
@@ -24,7 +25,7 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping
-    public List<Item> getItems(@RequestHeader("X-Sharer-User-Id") int userId) {
+    public List<Item> getItems(@RequestHeader("X-Sharer-User-Id") Long userId) {
         return itemService.getItems(userId);
     }
 
@@ -34,19 +35,19 @@ public class ItemController {
     }
 
     @GetMapping("/{id}")
-    public ItemDto getUserById(@PathVariable int id) {
+    public ItemDto getItemById(@PathVariable Long id) {
         return itemService.getItemById(id);
     }
 
     @PostMapping
-    public ItemDto createUser(@RequestHeader("X-Sharer-User-Id") int userId, @RequestBody ItemDto itemDto)
+    public ItemDto createUser(@RequestHeader("X-Sharer-User-Id") Long userId, @RequestBody ItemDto itemDto)
             throws BadRequestException {
         log.info("User добавлен(UserController)");
         return itemService.createItem(userId, itemDto);
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto updateUserByIdPatch(@RequestHeader("X-Sharer-User-Id") int userId, @PathVariable int itemId,
+    public ItemDto updateUserByIdPatch(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable Long itemId,
                                        @RequestBody ItemDto item) throws BadRequestException, CloneNotSupportedException {
         return itemService.updateItemById(userId, itemId, item);
     }

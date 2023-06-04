@@ -3,8 +3,11 @@ package ru.practicum.shareit.request;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
+import ru.practicum.shareit.user.model.User;
 
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
@@ -13,15 +16,20 @@ import java.time.LocalDate;
  * TODO Sprint add-item-requests.
  */
 @Data
-@AllArgsConstructor
-@Builder
+@Entity
+@Table(name = "requests")
 public class ItemRequest {
-    Integer id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
     @NotBlank
     @Size(max = 200)
-    String description;
+    @Column(name = "description")
+    private String description;
     @NotBlank
-    String requestor;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "requestor_id")
+    private User requestor;
     @DateTimeFormat
-    LocalDate created;
+    private LocalDate created;
 }

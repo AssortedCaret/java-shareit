@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
@@ -11,13 +12,16 @@ import javax.validation.constraints.NotBlank;
  * TODO Sprint add-controllers.
  */
 @Data
-@AllArgsConstructor
-@Builder
+@Entity
+@Table(name = "users")
 public class User {
-    private Integer id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     @NotBlank
+    @Column(name = "name")
     private String name;
-    @NotBlank
     @Email
+    @Column(name = "email")
     private String email;
 }
