@@ -10,4 +10,6 @@ import java.util.List;
 public interface ItemRepository extends JpaRepository<Item, Long> {
     @Override
     Item getOne(Long id);
+    Item save(Item item);
+    Item getById(Long id);
 }

@@ -9,7 +9,7 @@ import java.util.List;
 public interface UserService {
     List<User> getUsers();
 
-    User getUserById(Long id);
+    UserDto getUserById(Long id) throws BadRequestException;
 
     User createUser(UserDto user) throws CloneNotSupportedException, BadRequestException;
 

@@ -29,7 +29,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable Long id) {
+    public UserDto getUserById(@PathVariable Long id) throws BadRequestException {
         return userService.getUserById(id);
     }
 
@@ -47,6 +47,7 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public void deleteUserById(@PathVariable Long id) {
+        log.info("User " + id + " удален(UserController)");
         userService.deleteUserById(id);
     }
 }

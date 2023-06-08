@@ -7,15 +7,17 @@ import ru.practicum.shareit.item.model.Item;
 import java.util.List;
 
 public interface ItemService {
-    List<Item> getItems(Long userId);
+    List<ItemDto> getItems(Long userId);
 
-    ItemDto getItemById(Long id);
+    ItemDto getItemById(Long userId, Long itemId);
 
-    List<Item> getItemsText(String text);
+    ItemDto getItemByIdSearch(Long itemId);
+
+    List<ItemDto> getItemsText(String text);
 
     ItemDto createItem(Long userId, ItemDto itemDto) throws BadRequestException;
 
     ItemDto updateItemById(Long userId, Long id, ItemDto item) throws CloneNotSupportedException, BadRequestException;
 
-    void deleteItemById(int id);
+    void deleteItemById(Long id);
 }

@@ -3,6 +3,7 @@ package ru.practicum.shareit.user.Service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exceptions.BadRequestException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.user.UserMapper;
@@ -31,41 +32,43 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getUsers() {
-        return new ArrayList<User>(userMap.values());
+        return new ArrayList<User>(userRepository.findAll());
     }
 
     @Override
-    public User getUserById(Long idUser) {
+    public UserDto getUserById(Long idUser) throws BadRequestException {
         if (idUser > id)
             throw new NotFoundException("Заданный Id отсутствует (User)");
-        User user = userMap.get(idUser);
-        return user;
+        List<User> userList = userRepository.findAll();
+        User user = userRepository.getById(idUser);
+        UserDto userDto = UserMapper.makeUserDto(user);
+        userDto.setId(user.getId());
+        return userDto;
     }
 
+    @Transactional
     @Override
     public User createUser(UserDto user) throws BadRequestException, CloneNotSupportedException {
         User newUser = UserMapper.makeUser(user);
         if (newUser.getEmail() == (null)) {
             throw new BadRequestException("Поле email не заполнено (User)");
         }
-        for (Map.Entry<Long, User> us : userMap.entrySet()) {
-            User userM = us.getValue();
+        if (!newUser.getEmail().contains("@")) {
+            throw new BadRequestException("Неправильный email(User)");
+        }
+        newUser.setId(makeId());
+        List<User> userList = userRepository.findAll();
+        for (User us : userList){
+            User userM = us;
             if (userM.getEmail().equals(newUser.getEmail())) {
                 throw new CloneNotSupportedException("Такой email уже существует(User)");
             }
         }
-        if (newUser.getId() == null)
-            newUser.setId(makeId());
-        if (!newUser.getEmail().contains("@")) {
-            throw new BadRequestException("Неправильный email(User)");
-        }
-        if (newUser.getId() == null)
-            newUser.setId(makeId());
-        userMap.put(newUser.getId(), newUser);
         userRepository.save(newUser);
         return newUser;
     }
 
+    @Transactional
     @Override
     public User updateUserById(Long id, UserDto userDto) throws CloneNotSupportedException, BadRequestException {
         User adUser = UserMapper.makeUser(userDto);
@@ -75,9 +78,9 @@ public class UserServiceImpl implements UserService {
         else {
             adUser.setEmail(userRepository.getById(id).getEmail());
         }
-//        else {
-        for (Map.Entry<Long, User> us : userMap.entrySet()) {
-            User userM = us.getValue();
+        List<User> userList = userRepository.findAll();
+        for (User us : userList){
+            User userM = us;
             if (adUser.getId().compareTo(userM.getId()) != 0) {
                 if (userM.getEmail().equals(adUser.getEmail())) {
                     throw new CloneNotSupportedException("Данный email уже зарегистрирован");
@@ -90,15 +93,17 @@ public class UserServiceImpl implements UserService {
         else {
             adUser.setName(userRepository.getById(id).getName());
         }
-        userMap.put(id, adUser);
         userRepository.save(adUser);
         return adUser;
     }
 
     @Override
     public void deleteUserById(Long id) {
-        userMap.remove(id);
-        userRepository.delete(userRepository.getById(id));
+        userRepository.deleteById(id);
+    }
+
+    public Long returnId(){
+        return id;
     }
 
     private Long makeId() {

@@ -3,11 +3,9 @@ package ru.practicum.shareit.booking;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.exceptions.BadRequestException;
 
 import java.util.List;
 
@@ -21,30 +19,32 @@ public class BookingController {
     @Autowired
     BookingService bookingService;
 
-    @GetMapping
-    public Booking toBooking(BookingDto bookingDto) {
-        return bookingService.toBooking(bookingDto);
+    @GetMapping("/owner")
+    public List<BookingDto> getBookingsOwner(@RequestHeader("X-Sharer-User-Id") Long id,
+                                                @RequestParam(defaultValue = "ALL") String state) throws BadRequestException {
+        return bookingService.getBookingsOwner(id, state);
     }
 
-    @PatchMapping("/{bookingId}")
-    public Booking bookingStatus(BookingDto bookingDto, BookingStatus book) {
-        return bookingService.bookingStatus(bookingDto, book);
+    @GetMapping
+    public List<BookingDto> getBookingState(@RequestHeader("X-Sharer-User-Id") Long id,
+                                                 @RequestParam(defaultValue = "ALL") String state) throws BadRequestException {
+        return bookingService.getBookingState(id, state);
     }
 
     @GetMapping("/{bookingId}")
-    public Booking getBooking(Long id) {
-        return bookingService.getBooking(id);
-    }
-/**
- *
- **/
-    @GetMapping("/bookings?state={state}")
-    public List<Booking> getAllBooking(Long id) {
-        return bookingService.getAllBooking(id);
+    public BookingDto getBooking(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable Long bookingId) {
+        return bookingService.getBooking(userId, bookingId);
     }
 
-    @GetMapping("/owner?state={state}")
-    public List<Booking> getAllBookingState() {
-        return bookingService.getAllBookingState();
+    @PostMapping
+    public BookingDto createBooking(@RequestHeader("X-Sharer-User-Id") Long userId, @RequestBody BookingEntity bookingEntity)
+            throws BadRequestException {
+       return bookingService.createBooking(userId, bookingEntity);
+    }
+
+    @PatchMapping("/{bookingId}")
+    public BookingDto bookingStatus(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                 @PathVariable Long bookingId, @RequestParam Boolean approved) throws BadRequestException {
+        return bookingService.bookingStatus(userId, bookingId, approved);
     }
 }
