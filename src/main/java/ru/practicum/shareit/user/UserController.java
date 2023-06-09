@@ -25,11 +25,13 @@ public class UserController {
 
     @GetMapping
     public List<User> getUsers() {
+        log.info("UserList получен(UserController)");
         return userService.getUsers();
     }
 
     @GetMapping("/{id}")
     public UserDto getUserById(@PathVariable Long id) throws BadRequestException {
+        log.info("User получен(UserController)");
         return userService.getUserById(id);
     }
 

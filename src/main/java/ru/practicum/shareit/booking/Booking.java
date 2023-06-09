@@ -19,7 +19,6 @@ import java.time.LocalDateTime;
 @JsonIgnoreProperties({"hibernateLazyInitializer"})
 public class Booking {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "start_date")
     private LocalDateTime start;

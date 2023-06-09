@@ -19,7 +19,6 @@ import javax.validation.constraints.Size;
 @Table(name = "items")
 public class Item {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @JoinColumn(name = "owner")
     @ManyToOne(fetch = FetchType.LAZY)
