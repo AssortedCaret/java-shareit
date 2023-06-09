@@ -25,7 +25,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("select bok " +
             "from Booking as bok " +
             "where bok.booker.id like ?1 " +
-            "and (bok.start like ?2 and bok.end like ?3) " +
+            "and (bok.start < ?2 and bok.end > ?3) " +
             "order by bok.start desc")
     List<Booking> findAllByBookerIdAndStartBeforeAndEndAfterOrderByDesc(Long id, LocalDateTime start, LocalDateTime end); //"CURRENT" state
 
@@ -70,7 +70,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("select bok " +
             "from Booking as bok " +
             "where bok.item.owner.id like ?1 " +
-            "and (bok.start like ?2 and bok.end like ?3) " +
+            "and (bok.start < ?2 and bok.end > ?3) " +
             "order by bok.start desc")
     List<Booking> findAllByBookerOwnerIdAndStartBeforeAndEndAfterOrderByDesc(Long id, LocalDateTime start, LocalDateTime end); //"CURRENT" state
 
@@ -116,7 +116,15 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "where bok.item_id = ?1 " +
             "and bok.start_date < ?2 " +
             "and bok.status = 'APPROVED' " +
-            "order by bok.start_date asc " +
+            "order by bok.start_date desc " +
             "limit 1", nativeQuery = true)
     Optional<Booking> getLastBookingForItem(Long itemId, LocalDateTime now);
+
+    @Query(value = "select bok.status " +
+            "from bookings as bok " +
+            "where bok.id = ?1 and " +
+            "bok.item_id = ?2 and " +
+            "bok.end_date < ?3 " +
+            "limit 1 ", nativeQuery = true)
+    BookingStatus checkStatusOfBooking(Long bookerId, Long itemId, LocalDateTime localDateTime);
 }

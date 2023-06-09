@@ -12,9 +12,7 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Slf4j
@@ -27,8 +25,6 @@ public class UserServiceImpl implements UserService {
     }
 
     private Long id = 0L;
-    private final Map<Long, User> userMap = new HashMap<>();
-    private List<User> userList = new ArrayList<>();
 
     @Override
     public List<User> getUsers() {
@@ -58,7 +54,7 @@ public class UserServiceImpl implements UserService {
         }
         newUser.setId(makeId());
         List<User> userList = userRepository.findAll();
-        for (User us : userList){
+        for (User us : userList) {
             User userM = us;
             if (userM.getEmail().equals(newUser.getEmail())) {
                 throw new CloneNotSupportedException("Такой email уже существует(User)");
@@ -79,7 +75,7 @@ public class UserServiceImpl implements UserService {
             adUser.setEmail(userRepository.getById(id).getEmail());
         }
         List<User> userList = userRepository.findAll();
-        for (User us : userList){
+        for (User us : userList) {
             User userM = us;
             if (adUser.getId().compareTo(userM.getId()) != 0) {
                 if (userM.getEmail().equals(adUser.getEmail())) {
@@ -102,7 +98,7 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(id);
     }
 
-    public Long returnId(){
+    public Long returnId() {
         return id;
     }
 

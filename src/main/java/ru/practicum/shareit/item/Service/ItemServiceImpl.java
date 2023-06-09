@@ -5,14 +5,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingItemEntity;
-import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.BookingRepository;
-import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.exceptions.BadRequestException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
+import ru.practicum.shareit.item.comment.Comment;
+import ru.practicum.shareit.item.comment.CommentDto;
+import ru.practicum.shareit.item.comment.CommentRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.Service.UserService;
 import ru.practicum.shareit.user.UserRepository;
@@ -24,8 +25,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static ru.practicum.shareit.booking.BookingMapper.makeBookingDto;
 import static ru.practicum.shareit.booking.BookingMapper.makeBookingItemEntity;
+import static ru.practicum.shareit.item.comment.CommentMapper.makeCommentDto;
+import static ru.practicum.shareit.item.comment.CommentMapper.makeCommentDtoList;
 import static ru.practicum.shareit.item.mapper.ItemMapper.makeItem;
 import static ru.practicum.shareit.item.mapper.ItemMapper.makeItemDto;
 
@@ -36,7 +38,9 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
     private final BookingRepository bookingRepository;
+    private final CommentRepository commentRepository;
     private Long id = 0L;
+    private Long commentId = 0L;
     private final Map<Long, Item> itemMap = new HashMap<>();
 
     @Override
@@ -61,6 +65,8 @@ public class ItemServiceImpl implements ItemService {
             itemDto = makeItemDto(it);
             itemDto.setNextBooking(nextDto);
             itemDto.setLastBooking(lastDto);
+            List<Comment> comment = commentRepository.getCommentsForItem(itemDto.getId());
+            itemDto.setComments(makeCommentDtoList(comment));
             if (it.getOwner().getId() == userId)
                 itemList.add(itemDto);
         }
@@ -82,23 +88,15 @@ public class ItemServiceImpl implements ItemService {
         }
         BookingItemEntity nextDto = null;
         BookingItemEntity lastDto = null;
-        if (next != null) 
+        if (next != null)
             nextDto = makeBookingItemEntity(next);
         if (last != null)
             lastDto = makeBookingItemEntity(last);
         ItemDto itemDto = makeItemDto(item);
         itemDto.setNextBooking(nextDto);
         itemDto.setLastBooking(lastDto);
-        return itemDto;
-    }
-
-    public ItemDto getItemByIdSearch(Long itemId) {
-        Item item = new Item();
-        if (itemId <= id)
-            item = itemRepository.getById(itemId);
-        else
-            throw new NotFoundException("Заданного Item id не существует");
-        ItemDto itemDto = makeItemDto(item);
+        List<CommentDto> comment = makeCommentDtoList(commentRepository.getCommentsForItem(itemId));
+        itemDto.setComments(comment);
         return itemDto;
     }
 
@@ -123,6 +121,30 @@ public class ItemServiceImpl implements ItemService {
             }
             return itemList;
         }
+    }
+
+    public CommentDto createComment(CommentDto commentDto, Long userId, Long itemId) throws BadRequestException {
+        if (userId > userService.returnId()) {
+            throw new NotFoundException("Данного юзера не существует (Item.createComment)");
+        }
+        if (itemId > id)
+            throw new BadRequestException("Данная вещь отсутствует (Item.createComment)");
+        if (commentDto.getText() == null || commentDto.getText() == "")
+            throw new BadRequestException("Комментарий пустой (Item.createComment)");
+        BookingStatus bookingStatus = bookingRepository.checkStatusOfBooking(userId, itemId, LocalDateTime.now());
+        if (bookingStatus == null)
+            throw new BadRequestException("Бронирование отсутствует (Item.createComment)");
+        commentDto.setId(makeCommentId());
+        Comment comment = new Comment();
+        comment.setId(commentDto.getId());
+        comment.setText(commentDto.getText());
+        comment.setItem(itemRepository.getById(itemId));
+        comment.setAuthor(userRepository.getById(userId));
+        comment.setCreated(LocalDateTime.now());
+        commentDto.setCreated(LocalDateTime.now());
+        commentRepository.save(comment);
+        CommentDto commentDto1 = makeCommentDto(comment);
+        return commentDto1;
     }
 
     @Transactional
@@ -174,12 +196,17 @@ public class ItemServiceImpl implements ItemService {
         itemRepository.delete(itemRepository.getById(id));
     }
 
-    public Long returnId(){
+    public Long returnId() {
         return id;
     }
 
     private Long makeId() {
         id += 1;
         return id;
+    }
+
+    private Long makeCommentId() {
+        commentId += 1;
+        return commentId;
     }
 }

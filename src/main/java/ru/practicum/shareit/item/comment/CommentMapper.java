@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.user.UserRepository;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RequiredArgsConstructor
 public class CommentMapper {
     private static ItemRepository itemRepository;
@@ -13,8 +16,6 @@ public class CommentMapper {
         Comment comment = new Comment();
         comment.setId(commentDto.getId());
         comment.setText(commentDto.getText());
-        comment.setItem(itemRepository.getOne(commentDto.getItem()));
-        comment.setAuthor(userRepository.getOne(commentDto.getAuthor()));
         return comment;
     }
 
@@ -22,8 +23,16 @@ public class CommentMapper {
         CommentDto commentDto = new CommentDto();
         commentDto.setId(comment.getId());
         commentDto.setText(comment.getText());
-        commentDto.setItem(comment.getItem().getId());
-        commentDto.setAuthor(comment.getAuthor().getId());
+        commentDto.setAuthorName(comment.getAuthor().getName());
+        commentDto.setCreated(comment.getCreated());
         return commentDto;
+    }
+
+    public static List<CommentDto> makeCommentDtoList(List<Comment> comments) {
+        List<CommentDto> dtos = new ArrayList<>();
+        for (Comment comment : comments) {
+            dtos.add(makeCommentDto(comment));
+        }
+        return dtos;
     }
 }

@@ -2,12 +2,10 @@ package ru.practicum.shareit.item.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
-import lombok.ToString;
 import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 /**
@@ -26,10 +24,8 @@ public class Item {
     @JoinColumn(name = "owner")
     @ManyToOne(fetch = FetchType.LAZY)
     private User owner;
-    @NotBlank
     @Column(name = "name")
     private String name;
-    @NotBlank
     @Size(max = 200)
     @Column(name = "description")
     private String description;

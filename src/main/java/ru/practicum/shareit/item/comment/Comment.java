@@ -6,7 +6,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
+import java.time.LocalDateTime;
 
 @Data
 @ToString
@@ -14,18 +14,16 @@ import javax.validation.constraints.NotBlank;
 @Table(name = "comments")
 public class Comment {
     @Id
-    @NotBlank
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotBlank
     @Column(name = "text")
     private String text;
-    @NotBlank
     @JoinColumn(name = "item_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Item item;
-    @NotBlank
     @JoinColumn(name = "author_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private User author;
+    @JoinColumn(name = "created")
+    private LocalDateTime created;
 }

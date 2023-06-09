@@ -16,4 +16,6 @@ public interface UserService {
     User updateUserById(Long id, UserDto user) throws CloneNotSupportedException, BadRequestException;
 
     void deleteUserById(Long id);
+
+    public Long returnId();
 }

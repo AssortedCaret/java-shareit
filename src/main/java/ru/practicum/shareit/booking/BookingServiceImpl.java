@@ -46,7 +46,6 @@ public class BookingServiceImpl implements BookingService {
         if (!item.getAvailable()) {
             throw new BadRequestException("Данную вещь нельзя забронировать (Booking.create)");
         }
-//        LocalDateTime end = bookingEntity.getEnd();
         if (bookingEntity.getStart() == null ||
                 bookingEntity.getEnd() == null || bookingEntity.getEnd().isBefore(LocalDateTime.now().minusMinutes(5)) ||
                 bookingEntity.getStart().isBefore(LocalDateTime.now().minusMinutes(5)) ||
@@ -73,7 +72,7 @@ public class BookingServiceImpl implements BookingService {
         if (booking.getStatus().equals(BookingStatus.APPROVED)) {
             throw new BadRequestException("Статус уже подтвержден(Booking.status)");
         }
-        if (approve == true && booking.getStatus().equals(BookingStatus.WAITING))
+        if (approve)
             booking.setStatus(BookingStatus.APPROVED);
         else
             booking.setStatus(BookingStatus.REJECTED);
