@@ -67,7 +67,7 @@ public class ItemServiceImpl implements ItemService {
             itemDto.setLastBooking(lastDto);
             List<Comment> comment = commentRepository.getCommentsForItem(itemDto.getId());
             itemDto.setComments(makeCommentDtoList(comment));
-            if (it.getOwner().getId() == userId)
+            if (it.getOwner().getId().equals(userId))
                 itemList.add(itemDto);
         }
         return itemList;
@@ -173,7 +173,7 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto updateItemById(Long userId, Long id, ItemDto itemDto) {
         Item adItem = itemRepository.getById(id);
         User verificationUser = adItem.getOwner();
-        if (verificationUser.getId() != userId) {
+        if (!verificationUser.getId().equals(userId)) {
             throw new NotFoundException("Поле Owner не совпадает");
         }
         if (itemDto.getId() != null)

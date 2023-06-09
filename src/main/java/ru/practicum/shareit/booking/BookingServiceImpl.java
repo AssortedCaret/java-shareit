@@ -13,7 +13,6 @@ import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import static ru.practicum.shareit.booking.BookingMapper.listToBookingDto;
@@ -40,7 +39,7 @@ public class BookingServiceImpl implements BookingService {
             throw new NotFoundException("Данной вещи не существует (Booking.create)");
         }
         Item item = itemRepository.getById(bookingEntity.getItemId());
-        if (userId == item.getOwner().getId()) {
+        if (userId.equals(item.getOwner().getId())) {
             throw new NotFoundException("Пользователь является собственником вещи (Booking.create)");
         }
         if (!item.getAvailable()) {
@@ -67,7 +66,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDto bookingStatus(Long userId, Long bookingId, Boolean approve) throws BadRequestException {
         Booking booking = bookingRepository.getById(bookingId);
-        if (booking.getItem().getOwner().getId() != userId)
+        if (!booking.getItem().getOwner().getId().equals(userId))
             throw new NotFoundException("Подтверждать статус имеет права только собственник вещи(Booking.status)");
         if (booking.getStatus().equals(BookingStatus.APPROVED)) {
             throw new BadRequestException("Статус уже подтвержден(Booking.status)");
@@ -88,7 +87,7 @@ public class BookingServiceImpl implements BookingService {
         }
         if (bookerId > id)
             throw new NotFoundException("Данная бронь отсутствует(Booking.get)");
-        if (booking.getItem().getOwner().getId() != userId && booking.getBooker().getId() != userId) {
+        if (!booking.getItem().getOwner().getId().equals(userId) && !booking.getBooker().getId().equals(userId)) {
             throw new NotFoundException("Вы не являетесь собственником");
         }
         return makeBookingDto(booking);
@@ -121,7 +120,6 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDto> getBookingState(Long userId, String state) throws BadRequestException {
-        List<BookingDto> booking = new ArrayList<>();
         if (userId > userService.returnId()) {
             throw new NotFoundException("Данного юзера не существует (Booking.create)");
         }
