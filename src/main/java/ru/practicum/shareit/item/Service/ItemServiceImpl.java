@@ -21,9 +21,7 @@ import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static ru.practicum.shareit.booking.BookingMapper.makeBookingItemEntity;
 import static ru.practicum.shareit.item.comment.CommentMapper.makeCommentDto;
@@ -41,41 +39,34 @@ public class ItemServiceImpl implements ItemService {
     private final CommentRepository commentRepository;
     private Long id = 0L;
     private Long commentId = 0L;
-    private final Map<Long, Item> itemMap = new HashMap<>();
 
+    @Transactional
     @Override
     public List<ItemDto> getItems(Long userId) {
         List<ItemDto> itemList = new ArrayList<>();
-        ItemDto itemDto = null;
-        Booking next = null;
-        Booking last = null;
-        for (Item it : itemRepository.findAll()) {
-            if (it.getOwner().getId().equals(userId)) {
-                next = bookingRepository.getNextBookingForItem(it.getId(), LocalDateTime.now()).orElse(null);
-                last = bookingRepository.getLastBookingForItem(it.getId(), LocalDateTime.now()).orElse(null);
-            }
-            BookingItemEntity nextDto = new BookingItemEntity();
-            BookingItemEntity lastDto = new BookingItemEntity();
-            if (next != null)
-                nextDto = makeBookingItemEntity(next);
-            else nextDto = null;
-            if (last != null)
-                lastDto = makeBookingItemEntity(last);
-            else lastDto = null;
+        ItemDto itemDto;
+        Booking next;
+        Booking last;
+        for (Item it : itemRepository.findAllItemWhereOwner(userId)) {
             itemDto = makeItemDto(it);
-            itemDto.setNextBooking(nextDto);
-            itemDto.setLastBooking(lastDto);
-            List<Comment> comment = commentRepository.getCommentsForItem(itemDto.getId());
-            itemDto.setComments(makeCommentDtoList(comment));
-            if (it.getOwner().getId().equals(userId))
-                itemList.add(itemDto);
+            next = bookingRepository.getNextBookingForItem(it.getId(), LocalDateTime.now()).orElse(null);
+            last = bookingRepository.getLastBookingForItem(it.getId(), LocalDateTime.now()).orElse(null);
+            if (next != null)
+                itemDto.setNextBooking(makeBookingItemEntity(next));
+            else itemDto.setNextBooking(null);
+            if (last != null)
+                itemDto.setLastBooking(makeBookingItemEntity(last));
+            else itemDto.setLastBooking(null);
+            itemDto.setComments(makeCommentDtoList(commentRepository.getCommentsForItem(itemDto.getId())));
+            itemList.add(itemDto);
         }
         return itemList;
     }
 
+    @Transactional
     @Override
     public ItemDto getItemById(Long userId, Long itemId) {
-        Item item = new Item();
+        Item item;
         if (itemId <= id)
             item = itemRepository.getById(itemId);
         else
@@ -123,6 +114,7 @@ public class ItemServiceImpl implements ItemService {
         }
     }
 
+    @Transactional
     public CommentDto createComment(CommentDto commentDto, Long userId, Long itemId) throws BadRequestException {
         if (userId > userService.returnId()) {
             throw new NotFoundException("Данного юзера не существует (Item.createComment)");
@@ -163,7 +155,6 @@ public class ItemServiceImpl implements ItemService {
         Item item = makeItem(itemDto);
         item.setId(itemDto.getId());
         item.setOwner(owner);
-        itemMap.put(item.getId(), item);
         itemRepository.save(item);
         return itemDto;
     }
@@ -184,7 +175,6 @@ public class ItemServiceImpl implements ItemService {
             adItem.setDescription(itemDto.getDescription());
         if (itemDto.getAvailable() != null)
             adItem.setAvailable(itemDto.getAvailable());
-        itemMap.put(id, adItem);
         itemRepository.save(adItem);
         itemDto = makeItemDto(adItem);
         return itemDto;
@@ -192,7 +182,6 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public void deleteItemById(Long id) {
-        itemMap.remove(id);
         itemRepository.delete(itemRepository.getById(id));
     }
 
