@@ -1,23 +1,29 @@
 package ru.practicum.shareit.user.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 
 /**
  * TODO Sprint add-controllers.
  */
 @Data
-@AllArgsConstructor
-@Builder
+/** для исправления косяка с InvalidDefinitionException: No serializer found for class
+ * org.hibernate.proxy.pojo.bytebuddy.ByteBuddyInterceptor and no properties discovered to create BeanSerializer**/
+@JsonIgnoreProperties({"hibernateLazyInitializer"})
+@Entity
+@Table(name = "users")
 public class User {
-    private Integer id;
-    @NotBlank
+    @Id
+    private Long id;
+    @Column(name = "name")
     private String name;
-    @NotBlank
     @Email
+    @Column(name = "email")
     private String email;
 }

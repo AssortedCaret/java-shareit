@@ -1,5 +1,6 @@
 package ru.practicum.shareit.user.Service;
 
+import ru.practicum.shareit.exceptions.BadRequestException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
@@ -8,11 +9,13 @@ import java.util.List;
 public interface UserService {
     List<User> getUsers();
 
-    User getUserById(int id);
+    UserDto getUserById(Long id) throws BadRequestException;
 
-    User createUser(UserDto user) throws CloneNotSupportedException;
+    User createUser(UserDto user) throws CloneNotSupportedException, BadRequestException;
 
-    User updateUserById(int id, User user) throws CloneNotSupportedException;
+    User updateUserById(Long id, UserDto user) throws CloneNotSupportedException, BadRequestException;
 
-    void deleteUserById(int id);
+    void deleteUserById(Long id);
+
+    public Long returnId();
 }

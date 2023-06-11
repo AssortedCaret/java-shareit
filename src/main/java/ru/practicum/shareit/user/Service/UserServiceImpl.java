@@ -1,79 +1,108 @@
 package ru.practicum.shareit.user.Service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.exceptions.BadRequestException;
+import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.user.UserMapper;
+import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
-    private Integer id = 0;
+    private final UserRepository userRepository;
 
-    private final Map<Integer, User> userMap = new HashMap<>();
-    private List<User> userList = new ArrayList<>();
+    @Autowired
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    private Long id = 0L;
 
     @Override
     public List<User> getUsers() {
-        return new ArrayList<User>(userMap.values());
+        return new ArrayList<User>(userRepository.findAll());
     }
 
     @Override
-    public User getUserById(int id) {
-        User user = userMap.get(id);
-        return user;
+    public UserDto getUserById(Long idUser) throws BadRequestException {
+        if (idUser > id)
+            throw new NotFoundException("Заданный Id отсутствует (User)");
+        List<User> userList = userRepository.findAll();
+        User user = userRepository.getById(idUser);
+        UserDto userDto = UserMapper.makeUserDto(user);
+        userDto.setId(user.getId());
+        return userDto;
     }
 
+    @Transactional
     @Override
-    public User createUser(UserDto user) throws CloneNotSupportedException {
+    public User createUser(UserDto user) throws BadRequestException, CloneNotSupportedException {
         User newUser = UserMapper.makeUser(user);
-        for (Map.Entry<Integer, User> us : userMap.entrySet()) {
-            User userM = us.getValue();
+        if (newUser.getEmail() == (null)) {
+            throw new BadRequestException("Поле email не заполнено (User)");
+        }
+        if (!newUser.getEmail().contains("@")) {
+            throw new BadRequestException("Неправильный email(User)");
+        }
+        newUser.setId(makeId());
+        List<User> userList = userRepository.findAll();
+        for (User us : userList) {
+            User userM = us;
             if (userM.getEmail().equals(newUser.getEmail())) {
-                throw new CloneNotSupportedException("Данный email уже зарегистрирован");
+                throw new CloneNotSupportedException("Такой email уже существует(User)");
             }
         }
-        if (newUser.getId() == null)
-            newUser.setId(makeId());
-        userMap.put(newUser.getId(), newUser);
+        userRepository.save(newUser);
         return newUser;
     }
 
+    @Transactional
     @Override
-    public User updateUserById(int id, User user) throws CloneNotSupportedException {
-        User adUser = userMap.get(id);
-        if (user.getId() == null)
-            user.setId(id);
-        if (user.getEmail() == null)
-            user.setEmail(adUser.getEmail());
+    public User updateUserById(Long id, UserDto userDto) throws CloneNotSupportedException, BadRequestException {
+        User adUser = UserMapper.makeUser(userDto);
+        adUser.setId(id);
+        if (!(userDto.getEmail() == null))
+            adUser.setEmail(userDto.getEmail());
         else {
-            for (Map.Entry<Integer, User> us : userMap.entrySet()) {
-                User userM = us.getValue();
-                if (adUser.getId().compareTo(userM.getId()) != 0) {
-                    if (userM.getEmail().equals(user.getEmail())) {
-                        throw new CloneNotSupportedException("Данный email уже зарегистрирован");
-                    }
+            adUser.setEmail(userRepository.getById(id).getEmail());
+        }
+        List<User> userList = userRepository.findAll();
+        for (User us : userList) {
+            User userM = us;
+            if (adUser.getId().compareTo(userM.getId()) != 0) {
+                if (userM.getEmail().equals(adUser.getEmail())) {
+                    throw new CloneNotSupportedException("Данный email уже зарегистрирован");
                 }
             }
         }
-        if (user.getName() == null)
-            user.setName(adUser.getName());
-        userMap.put(id, user);
-        return user;
+//        }
+        if (!(adUser.getName() == null))
+            adUser.setName(userDto.getName());
+        else {
+            adUser.setName(userRepository.getById(id).getName());
+        }
+        userRepository.save(adUser);
+        return adUser;
     }
 
     @Override
-    public void deleteUserById(int id) {
-        userMap.remove(id);
+    public void deleteUserById(Long id) {
+        userRepository.deleteById(id);
     }
 
-    private Integer makeId() {
+    public Long returnId() {
+        return id;
+    }
+
+    private Long makeId() {
         id += 1;
         return id;
     }

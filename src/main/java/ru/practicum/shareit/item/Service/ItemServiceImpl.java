@@ -2,88 +2,169 @@ package ru.practicum.shareit.item.Service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.item.BadRequestException;
-import ru.practicum.shareit.item.NotFoundException;
+import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.Booking;
+import ru.practicum.shareit.booking.BookingItemEntity;
+import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.BookingStatus;
+import ru.practicum.shareit.exceptions.BadRequestException;
+import ru.practicum.shareit.exceptions.NotFoundException;
+import ru.practicum.shareit.item.ItemRepository;
+import ru.practicum.shareit.item.comment.Comment;
+import ru.practicum.shareit.item.comment.CommentDto;
+import ru.practicum.shareit.item.comment.CommentRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.Service.UserService;
+import ru.practicum.shareit.user.UserRepository;
+import ru.practicum.shareit.user.model.User;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import static ru.practicum.shareit.item.ItemMapper.makeItem;
-import static ru.practicum.shareit.item.ItemMapper.makeItemDto;
+import static ru.practicum.shareit.booking.BookingMapper.makeBookingItemEntity;
+import static ru.practicum.shareit.item.comment.CommentMapper.makeCommentDto;
+import static ru.practicum.shareit.item.comment.CommentMapper.makeCommentDtoList;
+import static ru.practicum.shareit.item.mapper.ItemMapper.makeItem;
+import static ru.practicum.shareit.item.mapper.ItemMapper.makeItemDto;
 
 @Service
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
     private final UserService userService;
-    private Integer id = 0;
-    private final Map<Integer, Item> itemMap = new HashMap<>();
+    private final UserRepository userRepository;
+    private final ItemRepository itemRepository;
+    private final BookingRepository bookingRepository;
+    private final CommentRepository commentRepository;
+    private Long id = 0L;
+    private Long commentId = 0L;
 
+    @Transactional
     @Override
-    public List<Item> getItems(int userId) {
-        List<Item> itemList = new ArrayList<>();
-        for (Map.Entry<Integer, Item> it : itemMap.entrySet()) {
-            Item itemM = it.getValue();
-            if (itemM.getOwner().getId() == userId)
-                itemList.add(itemM);
+    public List<ItemDto> getItems(Long userId) {
+        List<ItemDto> itemList = new ArrayList<>();
+        ItemDto itemDto;
+        Booking next;
+        Booking last;
+        for (Item it : itemRepository.findAllItemWhereOwner(userId)) {
+            itemDto = makeItemDto(it);
+            next = bookingRepository.getNextBookingForItem(it.getId(), LocalDateTime.now()).orElse(null);
+            last = bookingRepository.getLastBookingForItem(it.getId(), LocalDateTime.now()).orElse(null);
+            if (next != null)
+                itemDto.setNextBooking(makeBookingItemEntity(next));
+            else itemDto.setNextBooking(null);
+            if (last != null)
+                itemDto.setLastBooking(makeBookingItemEntity(last));
+            else itemDto.setLastBooking(null);
+            itemDto.setComments(makeCommentDtoList(commentRepository.getCommentsForItem(itemDto.getId())));
+            itemList.add(itemDto);
         }
         return itemList;
     }
 
+    @Transactional
     @Override
-    public ItemDto getItemById(int id) {
-        Item item = itemMap.get(id);
-        return makeItemDto(item);
+    public ItemDto getItemById(Long userId, Long itemId) {
+        Item item;
+        if (itemId <= id)
+            item = itemRepository.getById(itemId);
+        else
+            throw new NotFoundException("Заданного Item id не существует");
+        Booking next = null;
+        Booking last = null;
+        if (item.getOwner().getId().equals(userId)) {
+            next = bookingRepository.getNextBookingForItem(item.getId(), LocalDateTime.now()).orElse(null);
+            last = bookingRepository.getLastBookingForItem(item.getId(), LocalDateTime.now()).orElse(null);
+        }
+        BookingItemEntity nextDto = null;
+        BookingItemEntity lastDto = null;
+        if (next != null)
+            nextDto = makeBookingItemEntity(next);
+        if (last != null)
+            lastDto = makeBookingItemEntity(last);
+        ItemDto itemDto = makeItemDto(item);
+        itemDto.setNextBooking(nextDto);
+        itemDto.setLastBooking(lastDto);
+        List<CommentDto> comment = makeCommentDtoList(commentRepository.getCommentsForItem(itemId));
+        itemDto.setComments(comment);
+        return itemDto;
     }
 
     @Override
-    public List<Item> getItemsText(String text) {
-        List<Item> itemList = new ArrayList<>();
+    public List<ItemDto> getItemsText(String text) {
+        List<ItemDto> itemList = new ArrayList<>();
         String checkingTheComparisonName;
         String checkingTheComparisonDescription;
         if (text == null || text.equals(""))
             return new ArrayList<>();
         else {
-            for (Map.Entry<Integer, Item> it : itemMap.entrySet()) {
-                Item itemM = it.getValue();
+            for (Item it : itemRepository.findAll()) {
+                Item itemM = it;
                 if (itemM.getAvailable()) {
                     checkingTheComparisonName = itemM.getName().toLowerCase();
                     checkingTheComparisonDescription = itemM.getDescription().toLowerCase();
                     if (checkingTheComparisonName.contains(text.toLowerCase()))
-                        itemList.add(itemM);
+                        itemList.add(makeItemDto(itemM));
                     else if (checkingTheComparisonDescription.contains(text.toLowerCase()))
-                        itemList.add(itemM);
+                        itemList.add(makeItemDto(itemM));
                 }
             }
             return itemList;
         }
     }
 
+    @Transactional
+    public CommentDto createComment(CommentDto commentDto, Long userId, Long itemId) throws BadRequestException {
+        if (userId > userService.returnId()) {
+            throw new NotFoundException("Данного юзера не существует (Item.createComment)");
+        }
+        if (itemId > id)
+            throw new BadRequestException("Данная вещь отсутствует (Item.createComment)");
+        if (commentDto.getText() == null || commentDto.getText() == "")
+            throw new BadRequestException("Комментарий пустой (Item.createComment)");
+        BookingStatus bookingStatus = bookingRepository.checkStatusOfBooking(userId, itemId, LocalDateTime.now());
+        if (bookingStatus == null)
+            throw new BadRequestException("Бронирование отсутствует (Item.createComment)");
+        commentDto.setId(makeCommentId());
+        Comment comment = new Comment();
+        comment.setId(commentDto.getId());
+        comment.setText(commentDto.getText());
+        comment.setItem(itemRepository.getById(itemId));
+        comment.setAuthor(userRepository.getById(userId));
+        comment.setCreated(LocalDateTime.now());
+        commentDto.setCreated(LocalDateTime.now());
+        commentRepository.save(comment);
+        CommentDto commentDto1 = makeCommentDto(comment);
+        return commentDto1;
+    }
+
+    @Transactional
     @Override
-    public ItemDto createItem(int userId, ItemDto itemDto) throws BadRequestException {
-        if (userService.getUserById(userId) == null)
-            throw new NotFoundException("Поле User отсутствует");
-        itemDto.setOwner(userService.getUserById(userId));
+    public ItemDto createItem(Long userId, ItemDto itemDto) throws BadRequestException {
+        User owner = userRepository.getById(userId);
         if (itemDto.getAvailable() == null)
             throw new BadRequestException("Поле Available отсутствует");
         if (itemDto.getName() == null || itemDto.getName() == "")
             throw new BadRequestException("Поле Name отсутствует");
         if (itemDto.getDescription() == null)
             throw new BadRequestException("Поле Description отсутствует");
-        if (itemDto.getId() == null)
-            itemDto.setId(makeId());
-        itemMap.put(itemDto.getId(), makeItem(itemDto));
-        return getItemById(itemDto.getId());
+        if (userService.getUserById(userId) == null)
+            throw new NotFoundException("Поле User отсутствует");
+        itemDto.setId(makeId());
+        Item item = makeItem(itemDto);
+        item.setId(itemDto.getId());
+        item.setOwner(owner);
+        itemRepository.save(item);
+        return itemDto;
     }
 
+    @Transactional
     @Override
-    public ItemDto updateItemById(int userId, int id, ItemDto itemDto) {
-        Item adItem = itemMap.get(id);
-        if (adItem.getOwner().getId() != userId) {
+    public ItemDto updateItemById(Long userId, Long id, ItemDto itemDto) {
+        Item adItem = itemRepository.getById(id);
+        User verificationUser = adItem.getOwner();
+        if (!verificationUser.getId().equals(userId)) {
             throw new NotFoundException("Поле Owner не совпадает");
         }
         if (itemDto.getId() != null)
@@ -94,17 +175,27 @@ public class ItemServiceImpl implements ItemService {
             adItem.setDescription(itemDto.getDescription());
         if (itemDto.getAvailable() != null)
             adItem.setAvailable(itemDto.getAvailable());
-        itemMap.put(id, adItem);
-        return getItemById(adItem.getId());
+        itemRepository.save(adItem);
+        itemDto = makeItemDto(adItem);
+        return itemDto;
     }
 
     @Override
-    public void deleteItemById(int id) {
-        itemMap.remove(id);
+    public void deleteItemById(Long id) {
+        itemRepository.delete(itemRepository.getById(id));
     }
 
-    private Integer makeId() {
+    public Long returnId() {
+        return id;
+    }
+
+    private Long makeId() {
         id += 1;
         return id;
+    }
+
+    private Long makeCommentId() {
+        commentId += 1;
+        return commentId;
     }
 }

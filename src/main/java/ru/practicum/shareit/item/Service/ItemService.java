@@ -1,21 +1,23 @@
 package ru.practicum.shareit.item.Service;
 
-import ru.practicum.shareit.item.BadRequestException;
+import ru.practicum.shareit.exceptions.BadRequestException;
+import ru.practicum.shareit.item.comment.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
 
 public interface ItemService {
-    List<Item> getItems(int userId);
+    List<ItemDto> getItems(Long userId);
 
-    ItemDto getItemById(int id);
+    ItemDto getItemById(Long userId, Long itemId);
 
-    List<Item> getItemsText(String text);
+    List<ItemDto> getItemsText(String text);
 
-    ItemDto createItem(int userId, ItemDto itemDto) throws BadRequestException;
+    ItemDto createItem(Long userId, ItemDto itemDto) throws BadRequestException;
 
-    ItemDto updateItemById(int userId, int id, ItemDto item) throws CloneNotSupportedException, BadRequestException;
+    public CommentDto createComment(CommentDto commentDto, Long userId, Long itemId) throws BadRequestException;
 
-    void deleteItemById(int id);
+    ItemDto updateItemById(Long userId, Long id, ItemDto item) throws CloneNotSupportedException, BadRequestException;
+
+    void deleteItemById(Long id);
 }
