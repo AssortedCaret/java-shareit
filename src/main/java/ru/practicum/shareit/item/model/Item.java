@@ -2,7 +2,7 @@ package ru.practicum.shareit.item.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
-import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
@@ -32,5 +32,5 @@ public class Item {
     private Boolean available;
     @JoinColumn(name = "request")
     @ManyToOne(fetch = FetchType.LAZY)
-    private ItemRequest request;
+    private ItemRequest requestId;
 }

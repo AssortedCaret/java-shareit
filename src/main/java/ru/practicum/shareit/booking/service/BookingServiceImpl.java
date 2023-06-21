@@ -1,8 +1,15 @@
-package ru.practicum.shareit.booking;
+package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingEntity;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exceptions.BadRequestException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
@@ -15,8 +22,8 @@ import ru.practicum.shareit.user.model.User;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static ru.practicum.shareit.booking.BookingMapper.listToBookingDto;
-import static ru.practicum.shareit.booking.BookingMapper.makeBookingDto;
+import static ru.practicum.shareit.booking.mapper.BookingMapper.listToBookingDto;
+import static ru.practicum.shareit.booking.mapper.BookingMapper.makeBookingDto;
 
 @Service
 @RequiredArgsConstructor
@@ -94,24 +101,31 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getBookingsOwner(Long userId, String state) throws BadRequestException {
+    public List<BookingDto> getBookingsOwner(Long userId, String state, Integer from, Integer size)
+            throws BadRequestException {
         if (userId > userService.returnId()) {
             throw new NotFoundException("Данного юзера не существует (Booking.create)");
         }
+        int page = from >= 0 ? Math.round((float) from / size) : -1;
+        Pageable pageable = PageRequest.of(page, size).withSort(Sort.by("id").descending());
         switch (state) {
             case "ALL":
-                return listToBookingDto(bookingRepository.findAllByBookerOwnerIdOrderByDesc(userId));
+                return listToBookingDto(bookingRepository.findAllByBookerOwnerIdOrderByDesc(userId, pageable));
             case "CURRENT":
-                return listToBookingDto(bookingRepository.findAllByBookerOwnerIdAndStartBeforeAndEndAfterOrderByDesc(userId, LocalDateTime.now(),
-                        LocalDateTime.now()));
+                return listToBookingDto(bookingRepository.findAllByBookerOwnerIdAndStartBeforeAndEndAfterOrderByDesc(
+                        userId, LocalDateTime.now(), LocalDateTime.now(), pageable));
             case "PAST":
-                return listToBookingDto(bookingRepository.findAllByBookerOwnerIdAndEndBeforeOrderByDesc(userId, LocalDateTime.now()));
+                return listToBookingDto(bookingRepository.findAllByBookerOwnerIdAndEndBeforeOrderByDesc(userId,
+                        LocalDateTime.now(), pageable));
             case "FUTURE":
-                return listToBookingDto(bookingRepository.findAllByBookerOwnerIdAndBookerStartAfterOrderByDesc(userId, LocalDateTime.now()));
+                return listToBookingDto(bookingRepository.findAllByBookerOwnerIdAndBookerStartAfterOrderByDesc(userId,
+                        LocalDateTime.now(), pageable));
             case "WAITING":
-                return listToBookingDto(bookingRepository.findAllByBookerOwnerIdAndBookerStatusWaitingOrderByDesc(userId, BookingStatus.WAITING));
+                return listToBookingDto(bookingRepository.findAllByBookerOwnerIdAndBookerStatusWaitingOrderByDesc(
+                        userId, BookingStatus.WAITING, pageable));
             case "REJECTED":
-                return listToBookingDto(bookingRepository.findAllByBookerOwnerIdAndBookerStatusRejectedOrderByDesc(userId, BookingStatus.REJECTED));
+                return listToBookingDto(bookingRepository.findAllByBookerOwnerIdAndBookerStatusRejectedOrderByDesc(
+                        userId, BookingStatus.REJECTED, pageable));
             case "UNSUPPORTED_STATUS":
                 throw new BadRequestException("Unknown state: UNSUPPORTED_STATUS");
         }
@@ -119,24 +133,31 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getBookingState(Long userId, String state) throws BadRequestException {
+    public List<BookingDto> getBookingState(Long userId, String state, Integer from, Integer size)
+            throws BadRequestException {
         if (userId > userService.returnId()) {
             throw new NotFoundException("Данного юзера не существует (Booking.create)");
         }
+        int page = from >= 0 ? Math.round((float) from / size) : -1;
+        Pageable pageable = PageRequest.of(page, size).withSort(Sort.by("id").descending());
         switch (state) {
             case "ALL":
-                return listToBookingDto(bookingRepository.findAllByBookerIdOrderByDesc(userId));
+                return listToBookingDto(bookingRepository.findAllByBookerIdOrderByDesc(userId, pageable));
             case "CURRENT":
                 return listToBookingDto(bookingRepository.findAllByBookerIdAndStartBeforeAndEndAfterOrderByDesc(userId, LocalDateTime.now(),
-                        LocalDateTime.now()));
+                        LocalDateTime.now(), pageable));
             case "PAST":
-                return listToBookingDto(bookingRepository.findAllByBookerIdAndEndBeforeOrderByDesc(userId, LocalDateTime.now()));
+                return listToBookingDto(bookingRepository.findAllByBookerIdAndEndBeforeOrderByDesc(userId,
+                        LocalDateTime.now(), pageable));
             case "FUTURE":
-                return listToBookingDto(bookingRepository.findAllByBookerIdAndStartIsAfterOrderByStartDesc(userId, LocalDateTime.now()));
+                return listToBookingDto(bookingRepository.findAllByBookerIdAndStartIsAfterOrderByStartDesc(userId,
+                        LocalDateTime.now(), pageable));
             case "WAITING":
-                return listToBookingDto(bookingRepository.findAllByBookerIdAndBookerStatusWaitingOrderByDesc(userId, BookingStatus.WAITING));
+                return listToBookingDto(bookingRepository.findAllByBookerIdAndBookerStatusWaitingOrderByDesc(userId,
+                        BookingStatus.WAITING, pageable));
             case "REJECTED":
-                return listToBookingDto(bookingRepository.findAllByBookerIdAndBookerStatusRejectedOrderByDesc(userId, BookingStatus.REJECTED));
+                return listToBookingDto(bookingRepository.findAllByBookerIdAndBookerStatusRejectedOrderByDesc(userId,
+                        BookingStatus.REJECTED, pageable));
             case "UNSUPPORTED_STATUS":
                 throw new BadRequestException("Unknown state: UNSUPPORTED_STATUS");
         }

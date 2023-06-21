@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingEntity;
+import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.exceptions.BadRequestException;
 
 import java.util.List;
@@ -20,14 +22,18 @@ public class BookingController {
 
     @GetMapping("/owner")
     public List<BookingDto> getBookingsOwner(@RequestHeader("X-Sharer-User-Id") Long id,
-                                             @RequestParam(defaultValue = "ALL") String state) throws BadRequestException {
-        return bookingService.getBookingsOwner(id, state);
+                                             @RequestParam(defaultValue = "ALL") String state,
+                                             @RequestParam(defaultValue = "0") Integer from,
+                                             @RequestParam(defaultValue = "5") Integer size) throws BadRequestException {
+        return bookingService.getBookingsOwner(id, state, from, size);
     }
 
     @GetMapping
     public List<BookingDto> getBookingState(@RequestHeader("X-Sharer-User-Id") Long id,
-                                            @RequestParam(defaultValue = "ALL") String state) throws BadRequestException {
-        return bookingService.getBookingState(id, state);
+                                            @RequestParam(defaultValue = "ALL") String state,
+                                            @RequestParam(defaultValue = "0") Integer from,
+                                            @RequestParam(defaultValue = "5") Integer size) throws BadRequestException {
+        return bookingService.getBookingState(id, state, from, size);
     }
 
     @GetMapping("/{bookingId}")
