@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserService {
     public UserDto getUserById(Long idUser) throws BadRequestException {
         if (idUser > id)
             throw new NotFoundException("Заданный Id отсутствует (User)");
-        List<User> userList = userRepository.findAll();
+//        List<User> userList = userRepository.findAll();
         User user = userRepository.getById(idUser);
         UserDto userDto = UserMapper.makeUserDto(user);
         userDto.setId(user.getId());
@@ -83,7 +83,6 @@ public class UserServiceImpl implements UserService {
                 }
             }
         }
-//        }
         if (!(adUser.getName() == null))
             adUser.setName(userDto.getName());
         else {

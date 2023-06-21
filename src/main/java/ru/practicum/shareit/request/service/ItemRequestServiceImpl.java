@@ -41,9 +41,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
             List<Item> items = itemRepository.findAllItemWhereRequester(dto.getId());
             dto.setItems(listToItemDto(items));
         }
-        /**для проверки (удалить)**/
-        List<ItemRequest> itemRequestList = itemRequestRepository.findAll();
-        int i = 0;
         return itemRequestDto;
     }
 
@@ -55,15 +52,12 @@ public class ItemRequestServiceImpl implements ItemRequestService {
             throw new BadRequestException("Значения для страницы переданы не верно(ItemRequestServiceImpl.getRequestsById)");
         int page = from >= 0 ? Math.round((float) from / size) : -1;
         Pageable pageable = PageRequest.of(page, size).withSort(Sort.by("id").descending());
-//        List<ItemRequestDto> itemRequestDto = listToItemRequestDto(itemRequestRepository.getAllItemRequestForUserNull(userId, pageable));
-        /**для проверки (удалить)**/
         List<ItemRequestDto> itemRequestDto = listToItemRequestDto(itemRequestRepository.getAllItemRequestForUserNull(userId, pageable));
         for (ItemRequestDto dto : itemRequestDto) {
             List<Item> items = itemRepository.findAllItemWhereRequester(dto.getId());
             dto.setItems(listToItemDto(items));
         }
-        int i = 0;
-        return itemRequestDto;//listToItemRequestDto(itemRequestRepository.getAllItemRequestForUserNull(userId, pageable));
+        return itemRequestDto;
     }
 
     @Override
@@ -73,9 +67,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         if (requestId > id)
             throw new NotFoundException("Указанного запроса не существует(ItemRequestServiceImpl.getRequestsById)");
         ItemRequest itemRequest = itemRequestRepository.findById(requestId).orElseThrow(null);
-        /**для проверки (удалить)**/
-        List<ItemRequest> itemRequestList = itemRequestRepository.findAll();
-        int i = 0;
         ItemRequestDto itemRequestDto = makeItemRequestDto(itemRequest);
         itemRequestDto.setItems(listToItemDto(itemRepository.findAllItemWhereRequester(requestId)));
         return itemRequestDto;

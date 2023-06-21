@@ -1,7 +1,9 @@
 package ru.practicum.shareit.item.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
@@ -16,6 +18,8 @@ import javax.validation.constraints.Size;
  * org.hibernate.proxy.pojo.bytebuddy.ByteBuddyInterceptor and no properties discovered to create BeanSerializer**/
 @JsonIgnoreProperties({"hibernateLazyInitializer"})
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "items")
 public class Item {
     @Id
