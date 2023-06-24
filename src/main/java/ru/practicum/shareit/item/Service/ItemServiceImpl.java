@@ -53,7 +53,7 @@ public class ItemServiceImpl implements ItemService {
         ItemDto itemDto;
         Booking next;
         Booking last;
-        int page = from >= 0 ? Math.round((float) from / size) : -1;
+        int page = Math.round((float) from / size);
         Pageable pageable = PageRequest.of(page, size).withSort(Sort.by("id").descending());
         for (Item it : itemRepository.findAllItemWhereOwner(userId, pageable)) {
             itemDto = makeItemDto(it);
@@ -104,7 +104,7 @@ public class ItemServiceImpl implements ItemService {
         List<ItemDto> itemList = new ArrayList<>();
         String checkingTheComparisonName;
         String checkingTheComparisonDescription;
-        int page = from >= 0 ? Math.round((float) from / size) : -1;
+        int page = Math.round((float) from / size);
         Pageable pageable = PageRequest.of(page, size).withSort(Sort.by("id").descending());
         if (text == null || text.equals(""))
             return new ArrayList<>();

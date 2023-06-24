@@ -49,7 +49,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
             throw new NotFoundException("Указанного пользователя не существует(ItemRequestServiceImpl.getRequestsById)");
         if (from < 0 || size <= 0)
             throw new BadRequestException("Значения для страницы переданы не верно(ItemRequestServiceImpl.getRequestsById)");
-        int page = from >= 0 ? Math.round((float) from / size) : -1;
+        int page = Math.round((float) from / size);
         Pageable pageable = PageRequest.of(page, size).withSort(Sort.by("id").descending());
         List<ItemRequestDto> itemRequestDto = listToItemRequestDto(itemRequestRepository.getAllItemRequestForUserNull(userId, pageable));
         for (ItemRequestDto dto : itemRequestDto) {
