@@ -17,11 +17,10 @@ import ru.practicum.shareit.user.Service.UserService;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static ru.practicum.shareit.request.mapper.ItemRequestMapper.makeItemRequestDto;

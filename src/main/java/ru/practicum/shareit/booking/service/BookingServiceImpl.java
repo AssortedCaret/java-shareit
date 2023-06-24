@@ -5,6 +5,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -36,6 +37,7 @@ public class BookingServiceImpl implements BookingService {
 
     Long id = 0L;
 
+    @Transactional
     @Override
     public BookingDto createBooking(Long userId, BookingEntity bookingEntity) throws BadRequestException {
         if (userId > userService.returnId()) {
@@ -70,6 +72,7 @@ public class BookingServiceImpl implements BookingService {
         return bookingDto;
     }
 
+    @Transactional
     @Override
     public BookingDto bookingStatus(Long userId, Long bookingId, Boolean approve) throws BadRequestException {
         Booking booking = bookingRepository.getById(bookingId);
@@ -87,12 +90,13 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional
     public BookingDto getBooking(Long userId, Long bookerId) {
         Booking booking = bookingRepository.getById(bookerId);
         if (userId > userService.returnId()) {
             throw new NotFoundException("Данного юзера не существует (Booking.create)");
         }
-        if (bookerId > id)
+        if (bookerId > returnId())
             throw new NotFoundException("Данная бронь отсутствует(Booking.get)");
         if (!booking.getItem().getOwner().getId().equals(userId) && !booking.getBooker().getId().equals(userId)) {
             throw new NotFoundException("Вы не являетесь собственником");
@@ -100,6 +104,7 @@ public class BookingServiceImpl implements BookingService {
         return makeBookingDto(booking);
     }
 
+    @Transactional
     @Override
     public List<BookingDto> getBookingsOwner(Long userId, String state, Integer from, Integer size)
             throws BadRequestException {
@@ -132,6 +137,7 @@ public class BookingServiceImpl implements BookingService {
         return null;
     }
 
+    @Transactional
     @Override
     public List<BookingDto> getBookingState(Long userId, String state, Integer from, Integer size)
             throws BadRequestException {
@@ -164,8 +170,20 @@ public class BookingServiceImpl implements BookingService {
         return null;
     }
 
+    @Override
+    public Long returnId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     private Long makeId() {
         id += 1;
         return id;
     }
+
+
 }

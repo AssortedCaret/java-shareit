@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exceptions.BadRequestException;
 import ru.practicum.shareit.exceptions.NotFoundException;
-import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.ArrayList;
@@ -31,9 +31,10 @@ public class UserServiceImpl implements UserService {
         return new ArrayList<User>(userRepository.findAll());
     }
 
+    @Transactional
     @Override
     public UserDto getUserById(Long idUser) throws BadRequestException {
-        if (idUser > id)
+        if (idUser > returnId())
             throw new NotFoundException("Заданный Id отсутствует (User)");
 //        List<User> userList = userRepository.findAll();
         User user = userRepository.getById(idUser);
@@ -99,6 +100,10 @@ public class UserServiceImpl implements UserService {
 
     public Long returnId() {
         return id;
+    }
+
+    public void setId(Long ids) {
+        id = ids;
     }
 
     private Long makeId() {

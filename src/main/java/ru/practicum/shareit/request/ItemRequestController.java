@@ -25,22 +25,17 @@ public class ItemRequestController {
     }
 
     @GetMapping("/all")
-    public List<ItemRequestDto> getRequestsFrom(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                @RequestParam(defaultValue = "0") Integer from,
-                                                @RequestParam(defaultValue = "5") Integer size)
-                                                throws BadRequestException {
+    public List<ItemRequestDto> getRequestsFrom(@RequestHeader("X-Sharer-User-Id") Long userId, @RequestParam(defaultValue = "0") Integer from, @RequestParam(defaultValue = "5") Integer size) throws BadRequestException {
         return itemRequestService.getRequestsFrom(userId, from, size);
     }
 
     @GetMapping("/{requestId}")
-    public ItemRequestDto getRequestsById(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable Long requestId)
-            throws BadRequestException {
+    public ItemRequestDto getRequestsById(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable Long requestId) throws BadRequestException {
         return itemRequestService.getRequestsById(userId, requestId);
     }
 
     @PostMapping
-    public ItemRequestDto createRequests(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                         @RequestBody ItemRequestDto itemRequestDto) throws BadRequestException {
+    public ItemRequestDto createRequests(@RequestHeader("X-Sharer-User-Id") Long userId, @RequestBody ItemRequestDto itemRequestDto) throws BadRequestException {
         return itemRequestService.createRequests(userId, itemRequestDto);
     }
 }

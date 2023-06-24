@@ -10,11 +10,11 @@ import ru.practicum.shareit.exceptions.BadRequestException;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
@@ -33,7 +33,7 @@ class UserServiceImplTest {
 
     @Test
     void getUsers() {
-        User user1 =  easyRandom.nextObject(User.class);
+        User user1 = easyRandom.nextObject(User.class);
         User user2 = easyRandom.nextObject(User.class);
         when(userRepository.findAll())
                 .thenReturn(List.of(user1, user2));
@@ -43,7 +43,7 @@ class UserServiceImplTest {
 
     @Test
     void getUserById() throws BadRequestException {
-        User user1 =  easyRandom.nextObject(User.class);
+        User user1 = easyRandom.nextObject(User.class);
         when(userRepository.getById(anyLong()))
                 .thenReturn(user1);
         UserDto user = userService.getUserById(user1.getId());
@@ -52,7 +52,7 @@ class UserServiceImplTest {
 
     @Test
     void createUser() throws BadRequestException, CloneNotSupportedException {
-        UserDto user1 =  easyRandom.nextObject(UserDto.class);
+        UserDto user1 = easyRandom.nextObject(UserDto.class);
         user1.setEmail("us@us.ru");
         when(userRepository.findAll())
                 .thenReturn(new ArrayList<>());
@@ -62,7 +62,7 @@ class UserServiceImplTest {
 
     @Test
     void updateUserById() throws BadRequestException, CloneNotSupportedException {
-        UserDto user1 =  new UserDto();
+        UserDto user1 = new UserDto();
         user1.setEmail("user@user.ru");
         User user = easyRandom.nextObject(User.class);
         user.setEmail("userUs@us.us");

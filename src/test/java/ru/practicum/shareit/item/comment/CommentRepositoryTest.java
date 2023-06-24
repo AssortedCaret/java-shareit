@@ -15,7 +15,7 @@ import ru.practicum.shareit.user.model.User;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
 class CommentRepositoryTest {
@@ -29,7 +29,7 @@ class CommentRepositoryTest {
     CommentRepository commentRepository;
 
     @BeforeEach
-    public void saveObject() {
+    public void setUp() {
         User user = new User(1L, "name", "user@user.ru");
         userRepository.save(user);
         ItemRequest itemRequest = new ItemRequest(1L, "name", user, LocalDateTime.now());
@@ -41,7 +41,7 @@ class CommentRepositoryTest {
     }
 
     @AfterEach
-    public void clearRepository(){
+    public void clearRepository() {
         userRepository.deleteAll();
         itemRequestRepository.deleteAll();
         itemRepository.deleteAll();

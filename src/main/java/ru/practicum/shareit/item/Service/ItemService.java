@@ -20,4 +20,8 @@ public interface ItemService {
     ItemDto updateItemById(Long userId, Long id, ItemDto item) throws CloneNotSupportedException, BadRequestException;
 
     void deleteItemById(Long id);
+
+    Long returnId();
+
+    void setId(Long id);
 }

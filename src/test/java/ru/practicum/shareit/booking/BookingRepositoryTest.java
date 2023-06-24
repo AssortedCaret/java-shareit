@@ -17,7 +17,7 @@ import ru.practicum.shareit.user.model.User;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
 class BookingRepositoryTest {
@@ -43,7 +43,7 @@ class BookingRepositoryTest {
     }
 
     @AfterEach
-    public void clearRepository(){
+    public void clearRepository() {
         userRepository.deleteAll();
         itemRequestRepository.deleteAll();
         itemRepository.deleteAll();

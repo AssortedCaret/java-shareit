@@ -3,16 +3,13 @@ package ru.practicum.shareit.booking.mapper;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.dto.BookingEntity;
 import ru.practicum.shareit.booking.dto.BookingItemEntity;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Item;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class BookingMapperTest {
     private final BookingMapper bookingMapper = new BookingMapper();

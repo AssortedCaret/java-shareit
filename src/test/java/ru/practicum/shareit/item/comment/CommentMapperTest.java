@@ -2,13 +2,11 @@ package ru.practicum.shareit.item.comment;
 
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Item;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CommentMapperTest {
     private final CommentMapper commentMapper = new CommentMapper();

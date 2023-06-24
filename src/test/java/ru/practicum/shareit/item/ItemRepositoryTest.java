@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item;
 
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,7 +27,7 @@ class ItemRepositoryTest {
     ItemRequestRepository itemRequestRepository;
 
     @BeforeEach
-    public void saveObject() {
+    public void setUp() {
         User user = new User(1L, "name", "user@user.ru");
         userRepository.save(user);
         User user2 = new User(2L, "name2", "user2@user.ru");
@@ -42,7 +41,7 @@ class ItemRepositoryTest {
     }
 
     @AfterEach
-    public void clearRepository(){
+    public void clearRepository() {
         userRepository.deleteAll();
         itemRequestRepository.deleteAll();
         itemRepository.deleteAll();

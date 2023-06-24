@@ -6,7 +6,7 @@ import ru.practicum.shareit.exceptions.BadRequestException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class UserMapperTest {
     private final UserMapper userMapper = new UserMapper();

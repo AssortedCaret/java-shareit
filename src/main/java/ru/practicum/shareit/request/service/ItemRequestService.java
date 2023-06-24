@@ -14,4 +14,6 @@ public interface ItemRequestService {
     ItemRequestDto getRequestsById(Long userId, Long requestId) throws BadRequestException;
 
     ItemRequestDto createRequests(Long userId, ItemRequestDto itemRequestDto) throws BadRequestException;
+
+    void setId(Long id);
 }

@@ -16,4 +16,8 @@ public interface BookingService {
     List<BookingDto> getBookingsOwner(Long id, String state, Integer from, Integer size) throws BadRequestException;
 
     List<BookingDto> getBookingState(Long id, String state, Integer from, Integer size) throws BadRequestException;
+
+    Long returnId();
+
+    void setId(Long id);
 }

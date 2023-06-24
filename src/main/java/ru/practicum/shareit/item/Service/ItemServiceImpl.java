@@ -6,10 +6,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.dto.BookingItemEntity;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.BookingStatus;
+import ru.practicum.shareit.booking.dto.BookingItemEntity;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exceptions.BadRequestException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
@@ -75,7 +75,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto getItemById(Long userId, Long itemId) {
         Item item;
-        if (itemId <= id)
+        if (itemId <= returnId())
             item = itemRepository.getById(itemId);
         else
             throw new NotFoundException("Заданного Item id не существует");
@@ -129,7 +129,7 @@ public class ItemServiceImpl implements ItemService {
         if (userId > userService.returnId()) {
             throw new NotFoundException("Данного юзера не существует (Item.createComment)");
         }
-        if (itemId > id)
+        if (itemId > returnId())
             throw new BadRequestException("Данная вещь отсутствует (Item.createComment)");
         if (commentDto.getText() == null || commentDto.getText() == "")
             throw new BadRequestException("Комментарий пустой (Item.createComment)");
@@ -200,8 +200,14 @@ public class ItemServiceImpl implements ItemService {
         itemRepository.delete(itemRepository.getById(id));
     }
 
+    @Override
     public Long returnId() {
         return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
     }
 
     private Long makeId() {

@@ -14,10 +14,8 @@ import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.Service.UserService;
 import ru.practicum.shareit.user.UserRepository;
-import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import static ru.practicum.shareit.item.mapper.ItemMapper.listToItemDto;
@@ -31,6 +29,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
     private Long id = 0L;
+
     @Override
     public List<ItemRequestDto> getRequests(Long userId) throws BadRequestException {
         if (userId > userService.returnId())
@@ -84,8 +83,11 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         itemRequest.setRequester(userRepository.getById(userId));
         itemRequestRepository.save(itemRequest);
         itemRequestDto = makeItemRequestDto(itemRequest);
-//        itemRequestDto.setItems(listToItemDto(itemRepository.findAllItemWhereRequester(itemRequest.getId())));
         return itemRequestDto;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     private Long makeId() {

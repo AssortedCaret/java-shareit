@@ -9,11 +9,12 @@ import ru.practicum.shareit.request.model.ItemRequest;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ItemRequestMapperTest {
     private final ItemRequestMapper itemRequestMapper = new ItemRequestMapper();
     private final EasyRandom easyRandom = new EasyRandom();
+
     @Test
     void makeItemRequest() throws BadRequestException {
         ItemRequestDto itemRequestDto = easyRandom.nextObject(ItemRequestDto.class);
