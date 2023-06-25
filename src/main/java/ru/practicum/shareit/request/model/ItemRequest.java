@@ -28,5 +28,6 @@ public class ItemRequest {
     @ManyToOne(fetch = FetchType.LAZY)
     private User requester;
     @DateTimeFormat
+    @Column(name = "created")
     private LocalDateTime created;
 }
