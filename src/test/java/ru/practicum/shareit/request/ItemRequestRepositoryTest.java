@@ -30,8 +30,12 @@ class ItemRequestRepositoryTest {
     public void saveObject() {
         User user = new User(1L, "name", "user@user.ru");
         userRepository.save(user);
+        User user2 = new User(2L, "name2", "user2@user.ru");
+        userRepository.save(user2);
         ItemRequest itemRequest = new ItemRequest(1L, "name", user, LocalDateTime.now());
         itemRequestRepository.save(itemRequest);
+        ItemRequest itemRequest2 = new ItemRequest(2L, "name", user2, LocalDateTime.now());
+        itemRequestRepository.save(itemRequest2);
         Item item1 = new Item(1L, user, "name", "description", true, itemRequest);
         itemRepository.save(item1);
     }
@@ -52,6 +56,7 @@ class ItemRequestRepositoryTest {
     @Test
     void getAllItemRequestForUserNull() {
         List<ItemRequest> lists = itemRequestRepository.getAllItemRequestForUserNull(1L, Pageable.ofSize(1));
-        assertEquals(0, lists.size());
+        assertEquals(1, lists.size());
+        assertEquals(2, lists.get(0).getId());
     }
 }
