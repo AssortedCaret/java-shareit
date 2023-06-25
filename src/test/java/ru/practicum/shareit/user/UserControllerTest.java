@@ -89,4 +89,10 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(user2.getId()), Long.class));
     }
+
+    @Test
+    void deleteUserById() throws Exception {
+        mvc.perform(delete("/users/{id}", 1L))
+                .andExpect(status().isOk());
+    }
 }

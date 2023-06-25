@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.exceptions.BadRequestException;
+import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.ItemRequestRepository;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static ru.practicum.shareit.request.mapper.ItemRequestMapper.makeItemRequestDto;
@@ -63,6 +65,23 @@ class ItemRequestServiceImplTest {
     }
 
     @Test
+    void getRequestsException() throws BadRequestException {
+        assertThrows(NotFoundException.class, () -> itemRequestService.getRequests(1L));
+    }
+
+    @Test
+    void getRequestsFromException() throws BadRequestException {
+        assertThrows(NotFoundException.class, () -> itemRequestService.getRequestsFrom(1L, 0, 10));
+    }
+
+    @Test
+    void getRequestsFromException2() throws BadRequestException {
+        when(userService.returnId())
+                .thenReturn(1L);
+        assertThrows(BadRequestException.class, () -> itemRequestService.getRequestsFrom(1L, -1, 10));
+    }
+
+    @Test
     void getRequestsById() throws BadRequestException {
         Long userId = 1L;
         when(userService.returnId())
@@ -79,6 +98,18 @@ class ItemRequestServiceImplTest {
     }
 
     @Test
+    void getRequestsByIdException() throws BadRequestException {
+        assertThrows(NotFoundException.class, () -> itemRequestService.getRequestsById(1L, 1L));
+    }
+
+    @Test
+    void getRequestsByIdException2() throws BadRequestException {
+        when(userService.returnId())
+                .thenReturn(2L);
+        assertThrows(NotFoundException.class, () -> itemRequestService.getRequestsById(1L, 1L));
+    }
+
+    @Test
     void createRequests() throws BadRequestException {
         Long userId = 1L;
         when(userService.returnId())
@@ -90,5 +121,12 @@ class ItemRequestServiceImplTest {
                 .thenReturn(user);
         ItemRequestDto itemRequestDto = itemRequestService.createRequests(userId, itemRequestDto1);
         assertEquals(itemRequest.getDescription(), itemRequestDto.getDescription());
+    }
+
+    @Test
+    void createRequestsException() throws BadRequestException {
+        ItemRequest itemRequest = easyRandom.nextObject(ItemRequest.class);
+        ItemRequestDto itemRequestDto1 = makeItemRequestDto(itemRequest);
+        assertThrows(NotFoundException.class, () -> itemRequestService.createRequests(1L, itemRequestDto1));
     }
 }
