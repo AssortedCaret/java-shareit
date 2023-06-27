@@ -1,8 +1,10 @@
 package ru.practicum.shareit.booking;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import ru.practicum.shareit.booking.model.Booking;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,42 +22,43 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "from Booking as bok " +
             "where bok.booker.id like ?1 " +
             "order by bok.start desc")
-    List<Booking> findAllByBookerIdOrderByDesc(Long id);// "ALL" state
+    List<Booking> findAllByBookerIdOrderByDesc(Long id, Pageable pageable);// "ALL" state
 
     @Query("select bok " +
             "from Booking as bok " +
             "where bok.booker.id like ?1 " +
             "and (bok.start < ?2 and bok.end > ?3) " +
-            "order by bok.start desc")
-    List<Booking> findAllByBookerIdAndStartBeforeAndEndAfterOrderByDesc(Long id, LocalDateTime start, LocalDateTime end); //"CURRENT" state
+            "order by bok.id asc")
+    List<Booking> findAllByBookerIdAndStartBeforeAndEndAfterOrderByDesc(Long id, LocalDateTime start, LocalDateTime end,
+                                                                        Pageable pageable); //"CURRENT" state
 
     @Query("select bok " +
             "from Booking as bok " +
             "where bok.booker.id like ?1 " +
             "and (bok.end < ?2) " +
             "order by bok.start desc")
-    List<Booking> findAllByBookerIdAndEndBeforeOrderByDesc(Long id, LocalDateTime end); //"PAST" state
+    List<Booking> findAllByBookerIdAndEndBeforeOrderByDesc(Long id, LocalDateTime end, Pageable pageable); //"PAST" state
 
     @Query("select bok " +
             "from Booking as bok " +
             "where bok.booker.id like ?1 " +
             "and bok.start > ?2 " +
             "order by bok.start desc")
-    List<Booking> findAllByBookerIdAndStartIsAfterOrderByStartDesc(Long id, LocalDateTime now); //"FUTURE" state
+    List<Booking> findAllByBookerIdAndStartIsAfterOrderByStartDesc(Long id, LocalDateTime now, Pageable pageable); //"FUTURE" state
 
     @Query("select bok " +
             "from Booking as bok " +
             "where bok.booker.id like ?1 " +
             "and (bok.status like ?2) " +
             "order by bok.start desc")
-    List<Booking> findAllByBookerIdAndBookerStatusWaitingOrderByDesc(Long id, BookingStatus status); //"WAITING" state
+    List<Booking> findAllByBookerIdAndBookerStatusWaitingOrderByDesc(Long id, BookingStatus status, Pageable pageable); //"WAITING" state
 
     @Query("select bok " +
             "from Booking as bok " +
             "where bok.booker.id like ?1 " +
             "and (bok.status like ?2) " +
             "order by bok.start desc")
-    List<Booking> findAllByBookerIdAndBookerStatusRejectedOrderByDesc(Long id, BookingStatus status); //"REJECTED" state
+    List<Booking> findAllByBookerIdAndBookerStatusRejectedOrderByDesc(Long id, BookingStatus status, Pageable pageable); //"REJECTED" state
 
     /**
      * для работы с параметром owner
@@ -65,42 +68,44 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "from Booking as bok " +
             "where bok.item.owner.id like ?1 " +
             "order by bok.start desc")
-    List<Booking> findAllByBookerOwnerIdOrderByDesc(Long id);// "ALL" state
+    List<Booking> findAllByBookerOwnerIdOrderByDesc(Long id, Pageable pageable);// "ALL" state
 
     @Query("select bok " +
             "from Booking as bok " +
             "where bok.item.owner.id like ?1 " +
             "and (bok.start < ?2 and bok.end > ?3) " +
-            "order by bok.start desc")
-    List<Booking> findAllByBookerOwnerIdAndStartBeforeAndEndAfterOrderByDesc(Long id, LocalDateTime start, LocalDateTime end); //"CURRENT" state
+            "order by bok.id asc")
+    List<Booking> findAllByBookerOwnerIdAndStartBeforeAndEndAfterOrderByDesc(Long id, LocalDateTime start,
+                                                                             LocalDateTime end, Pageable pageable); //"CURRENT" state
 
     @Query("select bok " +
             "from Booking as bok " +
             "where bok.item.owner.id like ?1 " +
             "and (bok.end < ?2) " +
             "order by bok.start desc")
-    List<Booking> findAllByBookerOwnerIdAndEndBeforeOrderByDesc(Long id, LocalDateTime end); //"PAST" state
+    List<Booking> findAllByBookerOwnerIdAndEndBeforeOrderByDesc(Long id, LocalDateTime end, Pageable pageable); //"PAST" state
 
     @Query("select bok " +
             "from Booking as bok " +
             "where bok.item.owner.id like ?1 " +
             "and bok.start > ?2 " +
             "order by bok.start desc")
-    List<Booking> findAllByBookerOwnerIdAndBookerStartAfterOrderByDesc(Long id, LocalDateTime now); //"FUTURE" state
+    List<Booking> findAllByBookerOwnerIdAndBookerStartAfterOrderByDesc(Long id, LocalDateTime now, Pageable pageable); //"FUTURE" state
 
     @Query("select bok " +
             "from Booking as bok " +
             "where bok.item.owner.id like ?1 " +
             "and (bok.status like ?2) " +
             "order by bok.start desc")
-    List<Booking> findAllByBookerOwnerIdAndBookerStatusWaitingOrderByDesc(Long id, BookingStatus status); //"WAITING" state
+    List<Booking> findAllByBookerOwnerIdAndBookerStatusWaitingOrderByDesc(Long id, BookingStatus status, Pageable pageable); //"WAITING" state
 
     @Query("select bok " +
             "from Booking as bok " +
             "where bok.item.owner.id like ?1 " +
             "and (bok.status like ?2) " +
             "order by bok.start desc")
-    List<Booking> findAllByBookerOwnerIdAndBookerStatusRejectedOrderByDesc(Long id, BookingStatus status); //"REJECTED" state
+    List<Booking> findAllByBookerOwnerIdAndBookerStatusRejectedOrderByDesc(Long id, BookingStatus status,
+                                                                           Pageable pageable); //"REJECTED" state
 
     @Query(value = "select * " +
             "from Bookings as bok " +

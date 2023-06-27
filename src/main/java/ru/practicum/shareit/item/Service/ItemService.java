@@ -7,11 +7,11 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import java.util.List;
 
 public interface ItemService {
-    List<ItemDto> getItems(Long userId);
+    List<ItemDto> getItems(Long userId, Integer from, Integer size);
 
     ItemDto getItemById(Long userId, Long itemId);
 
-    List<ItemDto> getItemsText(String text);
+    List<ItemDto> getItemsText(String text, Integer from, Integer size);
 
     ItemDto createItem(Long userId, ItemDto itemDto) throws BadRequestException;
 
@@ -20,4 +20,8 @@ public interface ItemService {
     ItemDto updateItemById(Long userId, Long id, ItemDto item) throws CloneNotSupportedException, BadRequestException;
 
     void deleteItemById(Long id);
+
+    Long returnId();
+
+    void setId(Long id);
 }

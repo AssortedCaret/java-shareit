@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exceptions.BadRequestException;
 import ru.practicum.shareit.exceptions.NotFoundException;
-import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.ArrayList;
@@ -31,11 +31,11 @@ public class UserServiceImpl implements UserService {
         return new ArrayList<User>(userRepository.findAll());
     }
 
+    @Transactional
     @Override
     public UserDto getUserById(Long idUser) throws BadRequestException {
-        if (idUser > id)
+        if (idUser > returnId())
             throw new NotFoundException("Заданный Id отсутствует (User)");
-        List<User> userList = userRepository.findAll();
         User user = userRepository.getById(idUser);
         UserDto userDto = UserMapper.makeUserDto(user);
         userDto.setId(user.getId());
@@ -46,19 +46,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public User createUser(UserDto user) throws BadRequestException, CloneNotSupportedException {
         User newUser = UserMapper.makeUser(user);
-        if (newUser.getEmail() == (null)) {
+        if (newUser.getEmail() == (null))
             throw new BadRequestException("Поле email не заполнено (User)");
-        }
-        if (!newUser.getEmail().contains("@")) {
+        if (!newUser.getEmail().contains("@"))
             throw new BadRequestException("Неправильный email(User)");
-        }
         newUser.setId(makeId());
         List<User> userList = userRepository.findAll();
         for (User us : userList) {
             User userM = us;
-            if (userM.getEmail().equals(newUser.getEmail())) {
+            if (userM.getEmail().equals(newUser.getEmail()))
                 throw new CloneNotSupportedException("Такой email уже существует(User)");
-            }
         }
         userRepository.save(newUser);
         return newUser;
@@ -71,24 +68,20 @@ public class UserServiceImpl implements UserService {
         adUser.setId(id);
         if (!(userDto.getEmail() == null))
             adUser.setEmail(userDto.getEmail());
-        else {
+        else
             adUser.setEmail(userRepository.getById(id).getEmail());
-        }
         List<User> userList = userRepository.findAll();
         for (User us : userList) {
             User userM = us;
             if (adUser.getId().compareTo(userM.getId()) != 0) {
-                if (userM.getEmail().equals(adUser.getEmail())) {
+                if (userM.getEmail().equals(adUser.getEmail()))
                     throw new CloneNotSupportedException("Данный email уже зарегистрирован");
-                }
             }
         }
-//        }
         if (!(adUser.getName() == null))
             adUser.setName(userDto.getName());
-        else {
+        else
             adUser.setName(userRepository.getById(id).getName());
-        }
         userRepository.save(adUser);
         return adUser;
     }
@@ -100,6 +93,10 @@ public class UserServiceImpl implements UserService {
 
     public Long returnId() {
         return id;
+    }
+
+    public void setId(Long ids) {
+        id = ids;
     }
 
     private Long makeId() {

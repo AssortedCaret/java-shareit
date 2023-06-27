@@ -1,12 +1,15 @@
 package ru.practicum.shareit.item.Service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.booking.Booking;
-import ru.practicum.shareit.booking.BookingItemEntity;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.BookingStatus;
+import ru.practicum.shareit.booking.dto.BookingItemEntity;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exceptions.BadRequestException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
@@ -15,6 +18,8 @@ import ru.practicum.shareit.item.comment.CommentDto;
 import ru.practicum.shareit.item.comment.CommentRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.ItemRequestRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.Service.UserService;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
@@ -23,7 +28,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.practicum.shareit.booking.BookingMapper.makeBookingItemEntity;
+import static ru.practicum.shareit.booking.mapper.BookingMapper.makeBookingItemEntity;
 import static ru.practicum.shareit.item.comment.CommentMapper.makeCommentDto;
 import static ru.practicum.shareit.item.comment.CommentMapper.makeCommentDtoList;
 import static ru.practicum.shareit.item.mapper.ItemMapper.makeItem;
@@ -37,17 +42,20 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final ItemRequestRepository itemRequestRepository;
     private Long id = 0L;
     private Long commentId = 0L;
 
     @Transactional
     @Override
-    public List<ItemDto> getItems(Long userId) {
+    public List<ItemDto> getItems(Long userId, Integer from, Integer size) {
         List<ItemDto> itemList = new ArrayList<>();
         ItemDto itemDto;
         Booking next;
         Booking last;
-        for (Item it : itemRepository.findAllItemWhereOwner(userId)) {
+        int page = Math.round((float) from / size);
+        Pageable pageable = PageRequest.of(page, size).withSort(Sort.by("id").descending());
+        for (Item it : itemRepository.findAllItemWhereOwner(userId, pageable)) {
             itemDto = makeItemDto(it);
             next = bookingRepository.getNextBookingForItem(it.getId(), LocalDateTime.now()).orElse(null);
             last = bookingRepository.getLastBookingForItem(it.getId(), LocalDateTime.now()).orElse(null);
@@ -67,7 +75,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto getItemById(Long userId, Long itemId) {
         Item item;
-        if (itemId <= id)
+        if (itemId <= returnId())
             item = itemRepository.getById(itemId);
         else
             throw new NotFoundException("Заданного Item id не существует");
@@ -92,14 +100,16 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> getItemsText(String text) {
+    public List<ItemDto> getItemsText(String text, Integer from, Integer size) {
         List<ItemDto> itemList = new ArrayList<>();
         String checkingTheComparisonName;
         String checkingTheComparisonDescription;
+        int page = Math.round((float) from / size);
+        Pageable pageable = PageRequest.of(page, size).withSort(Sort.by("id").descending());
         if (text == null || text.equals(""))
             return new ArrayList<>();
         else {
-            for (Item it : itemRepository.findAll()) {
+            for (Item it : itemRepository.findAllItem(pageable)) {
                 Item itemM = it;
                 if (itemM.getAvailable()) {
                     checkingTheComparisonName = itemM.getName().toLowerCase();
@@ -119,7 +129,7 @@ public class ItemServiceImpl implements ItemService {
         if (userId > userService.returnId()) {
             throw new NotFoundException("Данного юзера не существует (Item.createComment)");
         }
-        if (itemId > id)
+        if (itemId > returnId())
             throw new BadRequestException("Данная вещь отсутствует (Item.createComment)");
         if (commentDto.getText() == null || commentDto.getText() == "")
             throw new BadRequestException("Комментарий пустой (Item.createComment)");
@@ -153,6 +163,11 @@ public class ItemServiceImpl implements ItemService {
             throw new NotFoundException("Поле User отсутствует");
         itemDto.setId(makeId());
         Item item = makeItem(itemDto);
+        if (itemDto.getRequestId() != null) {
+            ItemRequest itemRequest = itemRequestRepository.findById(itemDto.getRequestId()).orElseThrow(() ->
+                    new NotFoundException("Добавленный запрос отсутствует (ItemService.create)"));
+            item.setRequestId(itemRequest);
+        }
         item.setId(itemDto.getId());
         item.setOwner(owner);
         itemRepository.save(item);
@@ -185,8 +200,14 @@ public class ItemServiceImpl implements ItemService {
         itemRepository.delete(itemRepository.getById(id));
     }
 
+    @Override
     public Long returnId() {
         return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
     }
 
     private Long makeId() {
