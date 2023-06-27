@@ -31,19 +31,20 @@ public class UserController {
 
     @GetMapping("/{id}")
     public UserDto getUserById(@PathVariable Long id) throws BadRequestException {
-        log.info("User получен(UserController)");
+        log.info("User получен(UserController): {}", id);
         return userService.getUserById(id);
     }
 
     @PostMapping
     public User createUser(@Valid @RequestBody UserDto user) throws CloneNotSupportedException, BadRequestException {
-        log.info("User добавлен(UserController)");
+        log.info("User добавлен(UserController): {}", user);
         return userService.createUser(user);
     }
 
     @PatchMapping("/{userId}")
     public User updateUserByIdPatch(@PathVariable Long userId, @RequestBody UserDto user)
             throws CloneNotSupportedException, BadRequestException {
+        log.info("User обновлен(UserController): {}, {}", userId, user);
         return userService.updateUserById(userId, user);
     }
 
