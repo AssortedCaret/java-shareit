@@ -27,9 +27,9 @@ public class BookingClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getBookingsOwner(Long id,
-                                             String state,
-                                             Integer from,
-                                             Integer size) {
+                                                   String state,
+                                                   Integer from,
+                                                   Integer size) {
         Map<String, Object> parameters = Map.of(
                 "state", state,
                 "from", from,
@@ -39,9 +39,9 @@ public class BookingClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getBookingState(Long id,
-                                            String state,
-                                            Integer from,
-                                            Integer size) {
+                                                  String state,
+                                                  Integer from,
+                                                  Integer size) {
         Map<String, Object> parameters = Map.of(
                 "state", state,
                 "from", from,
@@ -59,7 +59,7 @@ public class BookingClient extends BaseClient {
     }
 
     public ResponseEntity<Object> bookingStatus(Long userId,
-                                    Long bookingId, Boolean approved) {
+                                                Long bookingId, Boolean approved) {
         Map<String, Object> parameters = Map.of("approved", approved);
         return patch("/" + bookingId + "?approved={approved}", userId, parameters, null);
     }
