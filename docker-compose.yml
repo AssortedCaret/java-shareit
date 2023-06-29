@@ -1,9 +1,8 @@
 version: '3.8'
-
 services:
   gateway:
     build: ./gateway
-    image: gateway
+    image: gateway_image
     container_name: gateway
     ports:
       - "8080:8080"
@@ -14,7 +13,7 @@ services:
 
   server:
     build: ./server
-    image: server
+    image: server_image
     container_name: server
     ports:
       - "9090:9090"
@@ -26,11 +25,11 @@ services:
       - SPRING_DATASOURCE_PASSWORD=test
 
   db:
-    image: postgres:13.7-alpine
+    image: postgres:14-alpine
     container_name: db
     ports:
       - "6541:5432"
     environment:
       - POSTGRES_DB=shareit
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=root
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=test
