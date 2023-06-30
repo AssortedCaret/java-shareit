@@ -20,13 +20,13 @@ public class ItemClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getItems(Long userId,
-                                           Integer from,
-                                           Integer size) {
+                                           int from,
+                                           int size) {
         Map<String, Object> parameters = Map.of(
                 "from", from,
                 "size", size
         );
-        return get("/?from={from}&size={size}", userId, parameters);
+        return get("?from={from}&size={size}", userId, parameters);
     }
 
     public ResponseEntity<Object> getItemsText(String text, Integer from,
@@ -36,7 +36,7 @@ public class ItemClient extends BaseClient {
                 "from", from,
                 "size", size
         );
-        return get("/?from={from}&size={size}", null, parameters);
+        return get("/search?text={text}&from={from}&size={size}", null, parameters);
     }
 
     public ResponseEntity<Object> getItemById(Long userId, Long id) {
@@ -49,12 +49,12 @@ public class ItemClient extends BaseClient {
 
     public ResponseEntity<Object> createComment(CommentDto commentDto, Long userId,
                                                 Long itemId) {
-        return post("", commentDto, userId, itemId);
+        return post("/" + itemId + "/comment", userId, commentDto);
     }
 
     public ResponseEntity<Object> updateItemById(Long userId, Long itemId,
                                                  ItemDto item) {
-        return patch("", userId, item);
+        return patch("/" + itemId, userId, item);
     }
 
     public ResponseEntity<Object> deleteItemById(Long id) {

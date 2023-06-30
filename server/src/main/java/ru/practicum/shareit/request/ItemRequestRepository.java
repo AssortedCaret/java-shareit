@@ -10,7 +10,7 @@ import java.util.List;
 public interface ItemRequestRepository extends JpaRepository<ItemRequest, Long> {
     @Query("select r " +
             "from ItemRequest as r " +
-            "where r.requester.id like ?1 " +
+            "where r.requester.id = ?1 " +
             "order by r.created desc ")
     List<ItemRequest> getAllItemRequestForUser(Long userId);
 

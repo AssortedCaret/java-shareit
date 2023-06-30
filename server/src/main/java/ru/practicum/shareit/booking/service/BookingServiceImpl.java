@@ -153,7 +153,7 @@ public class BookingServiceImpl implements BookingService {
                 return listToBookingDto(bookingRepository.findAllByBookerIdAndStartBeforeAndEndAfterOrderByDesc(userId, LocalDateTime.now(),
                         LocalDateTime.now(), pageable));
             case "PAST":
-                return listToBookingDto(bookingRepository.findAllByBookerIdAndEndBeforeOrderByDesc(userId,
+                return listToBookingDto(bookingRepository.findAllByBookerIdAndEndIsBeforeOrderByDesc(userId,
                         LocalDateTime.now(), pageable));
             case "FUTURE":
                 return listToBookingDto(bookingRepository.findAllByBookerIdAndStartIsAfterOrderByStartDesc(userId,

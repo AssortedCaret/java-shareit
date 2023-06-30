@@ -21,12 +21,12 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     @Query("select it " +
             "from Item as it " +
-            "where it.owner.id like ?1 " +
+            "where it.owner.id = ?1 " +
             "order by it.id asc")
     List<Item> findAllItemWhereOwner(Long userId, Pageable pageable);
 
     @Query("select it " +
             "from Item as it " +
-            "where it.requestId.id like ?1 ")
+            "where it.requestId.id = ?1 ")
     List<Item> findAllItemWhereRequester(Long itemRequestId);
 }

@@ -82,8 +82,8 @@ public class ItemServiceImpl implements ItemService {
         Booking next = null;
         Booking last = null;
         if (item.getOwner().getId().equals(userId)) {
-            next = bookingRepository.getNextBookingForItem(item.getId(), LocalDateTime.now()).orElse(null);
-            last = bookingRepository.getLastBookingForItem(item.getId(), LocalDateTime.now()).orElse(null);
+            next = bookingRepository.getNextBookingForItem(itemId, LocalDateTime.now()).orElse(null);
+            last = bookingRepository.getLastBookingForItem(itemId, LocalDateTime.now()).orElse(null);
         }
         BookingItemEntity nextDto = null;
         BookingItemEntity lastDto = null;

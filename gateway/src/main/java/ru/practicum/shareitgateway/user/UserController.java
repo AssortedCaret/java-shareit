@@ -17,30 +17,30 @@ import javax.validation.Valid;
 @Component
 @RequiredArgsConstructor
 public class UserController {
-    private final UserClient userService;
+    private final UserClient userClient;
 
     @GetMapping
     public ResponseEntity<Object> getUsers() {
-        return userService.getUsers();
+        return userClient.getUsers();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> getUserById(@PathVariable Long id) {
-        return userService.getUserById(id);
+        return userClient.getUserById(id);
     }
 
     @PostMapping
     public ResponseEntity<Object> createUser(@Valid @RequestBody UserDto user) {
-        return userService.createUser(user);
+        return userClient.createUser(user);
     }
 
     @PatchMapping("/{userId}")
     public ResponseEntity<Object> updateUserByIdPatch(@PathVariable Long userId, @RequestBody UserDto user) {
-        return userService.updateUserById(userId, user);
+        return userClient.updateUserById(userId, user);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteUserById(@PathVariable Long id) {
-        return userService.deleteUserById(id);
+        return userClient.deleteUserById(id);
     }
 }

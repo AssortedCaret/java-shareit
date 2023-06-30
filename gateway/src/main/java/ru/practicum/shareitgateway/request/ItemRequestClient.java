@@ -23,7 +23,7 @@ public class ItemRequestClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getRequests(Long userId) {
-        return get("/" + userId);
+        return get("", userId);
     }
 
     public ResponseEntity<Object> getRequestsFrom(Long userId,
@@ -33,11 +33,11 @@ public class ItemRequestClient extends BaseClient {
                 "from", from,
                 "size", size
         );
-        return get("/?from={from}&size={size}", userId, parameters);
+        return get("/all?from={from}&size={size}", userId, parameters);
     }
 
     public ResponseEntity<Object> getRequestsById(Long userId, Long requestId) {
-        return get("" + requestId, userId);
+        return get("/" + requestId, userId);
     }
 
     public ResponseEntity<Object> createRequests(Long userId, ItemRequestDto itemRequestDto) {

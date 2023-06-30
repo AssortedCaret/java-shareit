@@ -20,7 +20,7 @@ public class UserClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getUsers() {
-        return get("/");
+        return get("");
     }
 
     public ResponseEntity<Object> getUserById(Long id) {
@@ -28,14 +28,14 @@ public class UserClient extends BaseClient {
     }
 
     public ResponseEntity<Object> createUser(UserDto user) {
-        return post("/", user);
+        return post("", user);
     }
 
     public ResponseEntity<Object> updateUserById(Long userId, UserDto user) {
-        return patch("", userId, user);
+        return patch("/" + userId, user);
     }
 
     public ResponseEntity<Object> deleteUserById(Long id) {
-        return delete("" + id);
+        return delete("/" + id);
     }
 }

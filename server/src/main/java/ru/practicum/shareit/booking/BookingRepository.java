@@ -20,42 +20,42 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
      **/
     @Query("select bok " +
             "from Booking as bok " +
-            "where bok.booker.id like ?1 " +
+            "where bok.booker.id = ?1 " +
             "order by bok.start desc")
     List<Booking> findAllByBookerIdOrderByDesc(Long id, Pageable pageable);// "ALL" state
 
     @Query("select bok " +
             "from Booking as bok " +
-            "where bok.booker.id like ?1 " +
-            "and (bok.start < ?2 and bok.end > ?3) " +
+            "where bok.booker.id = ?1 " +
+            "and bok.start < ?2 and bok.end > ?3 " +
             "order by bok.id asc")
     List<Booking> findAllByBookerIdAndStartBeforeAndEndAfterOrderByDesc(Long id, LocalDateTime start, LocalDateTime end,
                                                                         Pageable pageable); //"CURRENT" state
 
     @Query("select bok " +
             "from Booking as bok " +
-            "where bok.booker.id like ?1 " +
-            "and (bok.end < ?2) " +
+            "where bok.booker.id = ?1 " +
+            "and bok.end < ?2 " +
             "order by bok.start desc")
-    List<Booking> findAllByBookerIdAndEndBeforeOrderByDesc(Long id, LocalDateTime end, Pageable pageable); //"PAST" state
+    List<Booking> findAllByBookerIdAndEndIsBeforeOrderByDesc(Long id, LocalDateTime end, Pageable pageable); //"PAST" state
 
     @Query("select bok " +
             "from Booking as bok " +
-            "where bok.booker.id like ?1 " +
+            "where bok.booker.id = ?1 " +
             "and bok.start > ?2 " +
             "order by bok.start desc")
     List<Booking> findAllByBookerIdAndStartIsAfterOrderByStartDesc(Long id, LocalDateTime now, Pageable pageable); //"FUTURE" state
 
     @Query("select bok " +
             "from Booking as bok " +
-            "where bok.booker.id like ?1 " +
+            "where bok.booker.id = ?1 " +
             "and (bok.status like ?2) " +
             "order by bok.start desc")
     List<Booking> findAllByBookerIdAndBookerStatusWaitingOrderByDesc(Long id, BookingStatus status, Pageable pageable); //"WAITING" state
 
     @Query("select bok " +
             "from Booking as bok " +
-            "where bok.booker.id like ?1 " +
+            "where bok.booker.id = ?1 " +
             "and (bok.status like ?2) " +
             "order by bok.start desc")
     List<Booking> findAllByBookerIdAndBookerStatusRejectedOrderByDesc(Long id, BookingStatus status, Pageable pageable); //"REJECTED" state
@@ -66,42 +66,42 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("select bok " +
             "from Booking as bok " +
-            "where bok.item.owner.id like ?1 " +
+            "where bok.item.owner.id = ?1 " +
             "order by bok.start desc")
     List<Booking> findAllByBookerOwnerIdOrderByDesc(Long id, Pageable pageable);// "ALL" state
 
     @Query("select bok " +
             "from Booking as bok " +
-            "where bok.item.owner.id like ?1 " +
-            "and (bok.start < ?2 and bok.end > ?3) " +
+            "where bok.item.owner.id = ?1 " +
+            "and bok.start < ?2 and bok.end > ?3 " +
             "order by bok.id asc")
     List<Booking> findAllByBookerOwnerIdAndStartBeforeAndEndAfterOrderByDesc(Long id, LocalDateTime start,
                                                                              LocalDateTime end, Pageable pageable); //"CURRENT" state
 
     @Query("select bok " +
             "from Booking as bok " +
-            "where bok.item.owner.id like ?1 " +
-            "and (bok.end < ?2) " +
+            "where bok.item.owner.id = ?1 " +
+            "and bok.end < ?2 " +
             "order by bok.start desc")
     List<Booking> findAllByBookerOwnerIdAndEndBeforeOrderByDesc(Long id, LocalDateTime end, Pageable pageable); //"PAST" state
 
     @Query("select bok " +
             "from Booking as bok " +
-            "where bok.item.owner.id like ?1 " +
+            "where bok.item.owner.id = ?1 " +
             "and bok.start > ?2 " +
             "order by bok.start desc")
     List<Booking> findAllByBookerOwnerIdAndBookerStartAfterOrderByDesc(Long id, LocalDateTime now, Pageable pageable); //"FUTURE" state
 
     @Query("select bok " +
             "from Booking as bok " +
-            "where bok.item.owner.id like ?1 " +
-            "and (bok.status like ?2) " +
+            "where bok.item.owner.id = ?1 " +
+            "and bok.status like ?2 " +
             "order by bok.start desc")
     List<Booking> findAllByBookerOwnerIdAndBookerStatusWaitingOrderByDesc(Long id, BookingStatus status, Pageable pageable); //"WAITING" state
 
     @Query("select bok " +
             "from Booking as bok " +
-            "where bok.item.owner.id like ?1 " +
+            "where bok.item.owner.id = ?1 " +
             "and (bok.status like ?2) " +
             "order by bok.start desc")
     List<Booking> findAllByBookerOwnerIdAndBookerStatusRejectedOrderByDesc(Long id, BookingStatus status,

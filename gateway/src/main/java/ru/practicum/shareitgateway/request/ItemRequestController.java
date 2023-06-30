@@ -14,27 +14,27 @@ import javax.validation.constraints.PositiveOrZero;
 @RequestMapping(path = "/requests")
 @RequiredArgsConstructor
 public class ItemRequestController {
-    private final ItemRequestClient itemRequestService;
+    private final ItemRequestClient itemRequestClient;
 
     @GetMapping
     public ResponseEntity<Object> getRequests(@RequestHeader("X-Sharer-User-Id") Long userId) {
-        return itemRequestService.getRequests(userId);
+        return itemRequestClient.getRequests(userId);
     }
 
     @GetMapping("/all")
     public ResponseEntity<Object> getRequestsFrom(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                   @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
                                                   @Positive @RequestParam(defaultValue = "5") Integer size) {
-        return itemRequestService.getRequestsFrom(userId, from, size);
+        return itemRequestClient.getRequestsFrom(userId, from, size);
     }
 
     @GetMapping("/{requestId}")
     public ResponseEntity<Object> getRequestsById(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable Long requestId) {
-        return itemRequestService.getRequestsById(userId, requestId);
+        return itemRequestClient.getRequestsById(userId, requestId);
     }
 
     @PostMapping
     public ResponseEntity<Object> createRequests(@RequestHeader("X-Sharer-User-Id") Long userId, @RequestBody ItemRequestDto itemRequestDto) {
-        return itemRequestService.createRequests(userId, itemRequestDto);
+        return itemRequestClient.createRequests(userId, itemRequestDto);
     }
 }
