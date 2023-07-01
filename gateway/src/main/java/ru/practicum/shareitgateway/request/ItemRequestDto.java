@@ -9,7 +9,6 @@ import ru.practicum.shareitgateway.item.ItemDto;
 import ru.practicum.shareitgateway.user.User;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.List;

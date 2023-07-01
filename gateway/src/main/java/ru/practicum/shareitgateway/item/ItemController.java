@@ -34,7 +34,7 @@ public class ItemController {
 
     @GetMapping("/search")
     public ResponseEntity<Object> getItemsText(@RequestParam String text, @PositiveOrZero @RequestParam(defaultValue = "0")
-                                                Integer from, @Positive @RequestParam(defaultValue = "10") Integer size) {
+    Integer from, @Positive @RequestParam(defaultValue = "10") Integer size) {
         return itemClient.getItemsText(text, from, size);
     }
 
