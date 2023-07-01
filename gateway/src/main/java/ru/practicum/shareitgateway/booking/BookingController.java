@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareitgateway.booking.dto.BookingEntity;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
@@ -17,6 +19,7 @@ import javax.validation.constraints.PositiveOrZero;
 @Slf4j
 @RequestMapping(path = "/bookings")
 @RequiredArgsConstructor
+@Validated
 public class BookingController {
     @Autowired
     BookingClient bookingClient;
@@ -43,7 +46,7 @@ public class BookingController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> createBooking(@RequestHeader("X-Sharer-User-Id") Long userId, @RequestBody BookingEntity bookingEntity) {
+    public ResponseEntity<Object> createBooking(@RequestHeader("X-Sharer-User-Id") Long userId, @Valid @RequestBody BookingEntity bookingEntity) {
         return bookingClient.createBooking(userId, bookingEntity);
     }
 

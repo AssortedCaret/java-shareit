@@ -29,7 +29,6 @@ public class Item {
     private User owner;
     @Column(name = "name")
     private String name;
-    @Size(max = 200)
     @Column(name = "description")
     private String description;
     @Column(name = "available")

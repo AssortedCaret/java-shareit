@@ -21,13 +21,11 @@ import java.time.LocalDateTime;
 public class ItemRequest {
     @Id
     private Long id;
-    @Size(max = 200)
     @Column(name = "description")
     private String description;
     @JoinColumn(name = "requester")
     @ManyToOne(fetch = FetchType.LAZY)
     private User requester;
-    @DateTimeFormat
     @Column(name = "created")
     private LocalDateTime created;
 }

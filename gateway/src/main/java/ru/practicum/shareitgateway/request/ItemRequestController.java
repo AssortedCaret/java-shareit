@@ -2,8 +2,10 @@ package ru.practicum.shareitgateway.request;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
@@ -13,6 +15,7 @@ import javax.validation.constraints.PositiveOrZero;
 @RestController
 @RequestMapping(path = "/requests")
 @RequiredArgsConstructor
+@Validated
 public class ItemRequestController {
     private final ItemRequestClient itemRequestClient;
 
@@ -34,7 +37,7 @@ public class ItemRequestController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> createRequests(@RequestHeader("X-Sharer-User-Id") Long userId, @RequestBody ItemRequestDto itemRequestDto) {
+    public ResponseEntity<Object> createRequests(@RequestHeader("X-Sharer-User-Id") Long userId, @Valid @RequestBody ItemRequestDto itemRequestDto) {
         return itemRequestClient.createRequests(userId, itemRequestDto);
     }
 }

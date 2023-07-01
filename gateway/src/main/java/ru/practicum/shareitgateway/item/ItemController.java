@@ -5,8 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
@@ -18,6 +20,7 @@ import javax.validation.constraints.PositiveOrZero;
 @RequestMapping("/items")
 @Component
 @RequiredArgsConstructor
+@Validated
 public class ItemController {
     @Autowired
     private final ItemClient itemClient;
@@ -41,7 +44,7 @@ public class ItemController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> createItem(@RequestHeader("X-Sharer-User-Id") Long userId, @RequestBody ItemDto itemDto) {
+    public ResponseEntity<Object> createItem(@RequestHeader("X-Sharer-User-Id") Long userId, @Valid @RequestBody ItemDto itemDto) {
         log.info("POST item with userId: {}", userId);
         return itemClient.createItem(userId, itemDto);
     }
@@ -55,7 +58,7 @@ public class ItemController {
 
     @PatchMapping("/{itemId}")
     public ResponseEntity<Object> updateUserByIdPatch(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable Long itemId,
-                                                      @RequestBody ItemDto item) {
+                                                      @Valid @RequestBody ItemDto item) {
         return itemClient.updateItemById(userId, itemId, item);
     }
 
